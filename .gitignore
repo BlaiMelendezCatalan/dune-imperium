@@ -1,0 +1,77 @@
+# Created by https://www.toptal.com/developers/gitignore/api
+
+### Operating System ###
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# macOS System files
+.DS_Store
+
+# Linux trash folder
+.Trash-*
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+### Node ###
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+### Python ###
+# Python
+*.pyc
+*.pyo
+__pycache__/
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+*.pyc
+*.pyo
+
+### JetBrains ###
+# JetBrains IDEs
+.idea/
+
+# VS Code ###
+.vscode/
+
+### macOS ###
+# macOS system files
+.DS_Store
+
+# JetBrains IDE ###
+.idea/
+
+# Windows ###
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Cache
+.ruff_cache/
