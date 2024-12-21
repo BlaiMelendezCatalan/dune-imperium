@@ -1,5 +1,6 @@
 from dune_imperium.decks.leaders import Leader
-from dune_imperium.tokens import Agents, Army
+from dune_imperium.map.trackers import InfluenceTracker, VictoryPointsTracker
+from dune_imperium.tokens import Agents, Troops
 
 
 class Player:
@@ -8,14 +9,29 @@ class Player:
     _solari: int = 0
     _spice: int = 0
 
-    _army: Army = Army()
+    _troops: Troops = Troops()
 
-    def __init__(self, id: int, username: str, color: str, leader: Leader):
+    _influence_trackers: dict[str, InfluenceTracker] = {
+        name: InfluenceTracker()
+        for name in ["fremen", "bene_gesserit", "spacing_guild", "emperor"]
+    }
+
+    def __init__(
+        self,
+        id: int,
+        username: str,
+        color: str,
+        leader: Leader,
+        initial_victory_points: int,
+        first_player: bool = False,
+    ):
         self._id = id
         self._username = username
         self._color = color
         self._leader = leader
-        self._agents: Agents = Agents(id)
+        self._agents = Agents(id)
+        self._victory_points = VictoryPointsTracker(initial_victory_points)
+        self._first_player = first_player
 
     @property
     def water(self) -> int:
@@ -40,3 +56,19 @@ class Player:
     @spice.setter
     def spice(self, value: int) -> None:
         self._spice = value
+
+    @property
+    def troops(self) -> Troops:
+        return self._troops
+
+    @property
+    def first_player(self) -> bool:
+        return self._first_player
+
+    @property
+    def influence_trackers(self) -> dict[str, InfluenceTracker]:
+        return self._influence_trackers
+
+    @property
+    def victory_points(self) -> int:
+        return self._victory_points.victory_points

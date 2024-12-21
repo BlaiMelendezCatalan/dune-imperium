@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+
 from dune_imperium.icons import AgentIcon
-from dune_imperium.map.control import Control, SpiceControl
+from dune_imperium.map.control import Control, SolariControl, SpiceControl
 
 
 class Location(ABC):
@@ -13,10 +14,13 @@ class Location(ABC):
 
     @abstractmethod
     def pay(self, player_id: int) -> None:
+        # TODO This calls API to modify game state (player resources, troop deployment, influence, aliance tokens, ...)
+        # or to say payment was not successful
         pass
 
     @abstractmethod
     def reward(self, player_id: int) -> None:
+        # TODO This calls API to modify game state (player resources, troop deployment, influence, aliance tokens, ...)
         pass
 
 
@@ -24,9 +28,8 @@ class SpiceLocation(Location):
 
     extra_spice: int = 0
 
-    @abstractmethod
-    def produce_spice(self) -> None:
-        pass
+    def produce_spice(self):
+        self.extra_spice += 1
 
 
 class Arrakeen(Location):
@@ -34,12 +37,141 @@ class Arrakeen(Location):
     name = "arrakeen"
     agent_icon = AgentIcon.CITY
     combat = True
+    control = SolariControl()
 
     def pay(self, player_id: int) -> None:
         return
 
     def reward(self, player_id: int) -> None:
-        # TODO Petition to API to increase player_id troop by 1 and drawing card
+        # TODO
+        ...
+
+
+class Carthag(Location):
+
+    name = "carthag"
+    agent_icon = AgentIcon.CITY
+    combat = True
+    control = SolariControl()
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Conspire(Location):
+
+    name = "conspire"
+    agent_icon = AgentIcon.EMPEROR
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class FoldSpace(Location):
+
+    name = "fold_space"
+    agent_icon = AgentIcon.SPACING_GUILD
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class TheGreatFlat(SpiceLocation):
+
+    name = "the_great_flat"
+    agent_icon = AgentIcon.SPICE_TRADE
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class HaggaBasin(SpiceLocation):
+
+    name = "hagga_basin"
+    agent_icon = AgentIcon.SPICE_TRADE
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        self.extra_spice = 0
+
+
+class HallOfOratory(Location):
+
+    name = "hall_of_oratory"
+    agent_icon = AgentIcon.LANDSRAAT
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class HardyWarriors(Location):
+
+    name = "hardy_warriors"
+    agent_icon = AgentIcon.FREMEN
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Heighliner(Location):
+
+    name = "heighliner"
+    agent_icon = AgentIcon.SPACING_GUILD
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class HighCouncil(Location):
+
+    name = "high_council"
+    agent_icon = AgentIcon.LANDSRAAT
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
         ...
 
 
@@ -51,13 +183,192 @@ class ImperialBasin(SpiceLocation):
     control = SpiceControl()
 
     def pay(self, player_id: int) -> None:
-        # TODO for other locations where pay is needed, this calls API to modify player resources or
-        # to say payment was not successful
         return
 
     def reward(self, player_id: int) -> None:
-        # TODO Petition to API to increase player_id spice with (1 + self.extra_spice)
+        # TODO
         self.extra_spice = 0
 
-    def produce_spice(self):
-        self.extra_spice += 1
+
+class Mentat(Location):
+
+    name = "mentat"
+    agent_icon = AgentIcon.LANDSRAAT
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class RallyTroops(Location):
+
+    name = "rally_troops"
+    agent_icon = AgentIcon.LANDSRAAT
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class ResearchStation(Location):
+
+    name = "research_location"
+    agent_icon = AgentIcon.CITY
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Secrets(Location):
+
+    name = "secrets"
+    agent_icon = AgentIcon.BENE_GESSERIT
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class SecureContract(Location):
+
+    name = "secure_contract"
+    agent_icon = AgentIcon.SPICE_TRADE
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class SelectiveBreeding(Location):
+
+    name = "selective_breeding"
+    agent_icon = AgentIcon.BENE_GESSERIT
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class SellMelange(Location):
+
+    name = "sell_melange"
+    agent_icon = AgentIcon.SPICE_TRADE
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class SietchTabr(Location):
+
+    name = "sietch_tabr"
+    agent_icon = AgentIcon.CITY
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Stillsuits(Location):
+
+    name = "stillsuits"
+    agent_icon = AgentIcon.FREMEN
+    combat = True
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Swordmaster(Location):
+
+    name = "swordmaster"
+    agent_icon = AgentIcon.LANDSRAAT
+
+    def pay(self, player_id: int) -> None:
+        # TODO
+        ...
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Wealth(Location):
+
+    name = "wealth"
+    agent_icon = AgentIcon.EMPEROR
+
+    def pay(self, player_id: int) -> None:
+        return
+
+    def reward(self, player_id: int) -> None:
+        # TODO
+        ...
+
+
+class Locations:
+
+    locations: list[Location]
+
+    def initialize(self):
+        self.locations = [
+            Arrakeen(),
+            Carthag(),
+            Conspire(),
+            FoldSpace(),
+            TheGreatFlat(),
+            HaggaBasin(),
+            HallOfOratory(),
+            HardyWarriors(),
+            Heighliner(),
+            HighCouncil(),
+            ImperialBasin(),
+            Mentat(),
+            RallyTroops(),
+            ResearchStation(),
+            Secrets(),
+            SecureContract(),
+            SelectiveBreeding(),
+            SellMelange(),
+            SietchTabr(),
+            Stillsuits(),
+            Swordmaster(),
+            Wealth(),
+        ]

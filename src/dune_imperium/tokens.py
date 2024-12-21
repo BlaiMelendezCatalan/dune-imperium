@@ -42,6 +42,9 @@ class Troop:
     _state: TroopState = TroopState.SUPPLY
 
 
-class Army:
+class Troops:
 
     _troops: list[Troop] = [Troop() for _ in range(16)]
+
+
+# TODO Aliance markers

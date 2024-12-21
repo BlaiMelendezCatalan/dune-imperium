@@ -1,3 +1,3 @@
-from dune_imperium.map.map import Map
+from dune_imperium.map.locations import Locations
 
-__all__ = ["Map"]
+__all__ = ["Locations"]
