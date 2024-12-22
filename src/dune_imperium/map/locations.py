@@ -31,6 +31,14 @@ class SpiceLocation(Location):
     def produce_spice(self):
         self.extra_spice += 1
 
+    @abstractmethod
+    def pay(self, player_id: int) -> None:
+        pass
+
+    @abstractmethod
+    def reward(self, player_id: int) -> None:
+        pass
+
 
 class Arrakeen(Location):
 
@@ -349,26 +357,8 @@ class Locations:
 
     def initialize(self):
         self.locations = [
-            Arrakeen(),
-            Carthag(),
-            Conspire(),
-            FoldSpace(),
-            TheGreatFlat(),
-            HaggaBasin(),
-            HallOfOratory(),
-            HardyWarriors(),
-            Heighliner(),
-            HighCouncil(),
-            ImperialBasin(),
-            Mentat(),
-            RallyTroops(),
-            ResearchStation(),
-            Secrets(),
-            SecureContract(),
-            SelectiveBreeding(),
-            SellMelange(),
-            SietchTabr(),
-            Stillsuits(),
-            Swordmaster(),
-            Wealth(),
+            subclass()
+            for subclass in Location.__subclasses__()
+            if subclass is not SpiceLocation
         ]
+        self.locations += [subclass() for subclass in SpiceLocation.__subclasses__()]

@@ -1,4 +1,5 @@
 from dune_imperium.decks.leaders import Leader
+from dune_imperium.factions import Faction
 from dune_imperium.map.trackers import InfluenceTracker, VictoryPointsTracker
 from dune_imperium.tokens import Agents, Troops
 
@@ -12,8 +13,7 @@ class Player:
     _troops: Troops = Troops()
 
     _influence_trackers: dict[str, InfluenceTracker] = {
-        name: InfluenceTracker()
-        for name in ["fremen", "bene_gesserit", "spacing_guild", "emperor"]
+        faction.value: InfluenceTracker() for faction in Faction
     }
 
     def __init__(
