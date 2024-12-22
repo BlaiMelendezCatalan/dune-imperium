@@ -21,6 +21,10 @@ class ImperiumCard(ABC):
     def expose(self):
         self.exposed = True
 
+    def trash(self):
+        # TODO
+        ...
+
     @abstractmethod
     def play_as_agent(self, player_id: int) -> None:
         # TODO apply logic and let the user decide the location of the agent.
