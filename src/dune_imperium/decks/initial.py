@@ -1,27 +1,22 @@
-from abc import ABC, abstractmethod
-from random import shuffle
+from dune_imperium.decks.base import BaseBigCard, BaseDeck
+from dune_imperium.decks.card_states import CardState
+from dune_imperium.icons import AgentIcon
 
-from dune_imperium.icons import AgentIcon, AgentIcons
 
+class InitialCard(BaseBigCard):
 
-class InitialCard(ABC):
+    state: CardState = CardState.ACQUIRED
 
-    name: str
-    repetitions: int = 1
-    agent_icons: AgentIcons = AgentIcons()
-
-    def trash(self):
-        # TODO
-        ...
-
-    @abstractmethod
     def play_as_agent(self, player_id: int) -> None:
         # TODO apply logic and let the user decide the location of the agent.
         pass
 
-    @abstractmethod
     def play_as_revelation(self, player_id: int) -> None:
         # TODO apply logic
+        pass
+
+    def trash(self):
+        # TODO
         pass
 
 
@@ -39,7 +34,7 @@ class Dagger(InitialCard):
 
     name = "dagger"
     repetitions = 2
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT)
+    agent_icons = [AgentIcon.LANDSRAAT]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -49,12 +44,12 @@ class Dagger(InitialCard):
 class Diplomacy(InitialCard):
 
     name = "diplomacy"
-    agent_icons = AgentIcons(
+    agent_icons = [
         AgentIcon.EMPEROR,
         AgentIcon.SPACING_GUILD,
         AgentIcon.BENE_GESSERIT,
         AgentIcon.FREMEN,
-    )
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -65,7 +60,7 @@ class DuneTheDesertPlanet(InitialCard):
 
     name = "dune_the_desert_planet"
     repetitions = 2
-    agent_icons = AgentIcons(AgentIcon.SPICE_TRADE)
+    agent_icons = [AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -75,7 +70,7 @@ class DuneTheDesertPlanet(InitialCard):
 class Reconnaissance(InitialCard):
 
     name = "reconnaissance"
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    agent_icons = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -85,7 +80,7 @@ class Reconnaissance(InitialCard):
 class SignetRing(InitialCard):
 
     name = "signet_ring"
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -95,26 +90,19 @@ class SignetRing(InitialCard):
 class SeekAllies(InitialCard):
 
     name = "seek_allies"
-    agent_icons = AgentIcons(
+    agent_icons = [
         AgentIcon.EMPEROR,
         AgentIcon.SPACING_GUILD,
         AgentIcon.BENE_GESSERIT,
         AgentIcon.FREMEN,
-    )
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
     def play_as_revelation(self, player_id: int) -> None: ...
 
 
-class InitialDeck:
+class InitialDeck(BaseDeck[InitialCard]):
 
-    cards: list[InitialCard]
-
-    def initialize(self):
-        self.cards = [
-            subclass()
-            for subclass in InitialCard.__subclasses__()
-            for _ in range(subclass.repetitions)
-        ]
-        shuffle(self.cards)
+    def __init__(self, **data) -> None:
+        super().__init__(InitialCard, shuffle_deck=True, **data)

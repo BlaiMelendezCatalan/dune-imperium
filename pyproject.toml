@@ -15,4 +15,4 @@ include = ["src", "tests"]
 extraPaths = ["src"]
 venvPath = "."
 venv = ".venv"
-strict = ["src", "tests"]
+

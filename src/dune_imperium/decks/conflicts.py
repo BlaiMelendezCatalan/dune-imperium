@@ -1,4 +1,8 @@
 from enum import Enum
+from pydantic import BaseModel
+from random import shuffle
+
+from dune_imperium.decks.card_states import CardState
 
 
 class ConflictNumber(Enum):
@@ -8,9 +12,11 @@ class ConflictNumber(Enum):
     THREE = "III"
 
 
-class ConflictCard:
+class ConflictCard(BaseModel):
 
+    name: str
     conflict_number: ConflictNumber
+    state: CardState = CardState.IN_DECK
 
     def first_prize(self, player_id: int) -> None:
         pass
@@ -24,107 +30,136 @@ class ConflictCard:
 
 class BattleForArrakeen(ConflictCard):
 
-    name = "battle_for_arrakeen"
-    conflict_number = ConflictNumber.THREE
+    name: str = "battle_for_arrakeen"
+    conflict_number: ConflictNumber = ConflictNumber.THREE
 
 
 class BattleForCarthag(ConflictCard):
 
-    name = "battle_for_carthag"
-    conflict_number = ConflictNumber.THREE
+    name: str = "battle_for_carthag"
+    conflict_number: ConflictNumber = ConflictNumber.THREE
 
 
 class BattleForImperialBasin(ConflictCard):
 
-    name = "battle_for_imperial_basin"
-    conflict_number = ConflictNumber.THREE
+    name: str = "battle_for_imperial_basin"
+    conflict_number: ConflictNumber = ConflictNumber.THREE
 
 
 class CloakAndDagger(ConflictCard):
 
-    name = "cloak_and_dagger"
-    conflict_number = ConflictNumber.TWO
+    name: str = "cloak_and_dagger"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class DesertPower(ConflictCard):
 
-    name = "desert_power"
-    conflict_number = ConflictNumber.TWO
+    name: str = "desert_power"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class GrandVision(ConflictCard):
 
-    name = "grand_vision"
-    conflict_number = ConflictNumber.THREE
+    name: str = "grand_vision"
+    conflict_number: ConflictNumber = ConflictNumber.THREE
 
 
 class GuildBankRaid(ConflictCard):
 
-    name = "guild_bank_raid"
-    conflict_number = ConflictNumber.TWO
+    name: str = "guild_bank_raid"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class Machinations(ConflictCard):
 
-    name = "machinations"
-    conflict_number = ConflictNumber.TWO
+    name: str = "machinations"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class RaidStockpiles(ConflictCard):
 
-    name = "raid_stockpiles"
-    conflict_number = ConflictNumber.TWO
+    name: str = "raid_stockpiles"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class SecureImperialBasin(ConflictCard):
 
-    name = "secure_imperial_basin"
-    conflict_number = ConflictNumber.TWO
+    name: str = "secure_imperial_basin"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class SiegeOfArrakeen(ConflictCard):
 
-    name = "siege_of_carthag"
-    conflict_number = ConflictNumber.TWO
+    name: str = "siege_of_carthag"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class SiegeOfCarthag(ConflictCard):
 
-    name = "siege_of_carthag"
-    conflict_number = ConflictNumber.TWO
+    name: str = "siege_of_carthag"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class SkirmishA(ConflictCard):
 
-    name = "skirmish_a"
-    conflict_number = ConflictNumber.ONE
+    name: str = "skirmish_a"
+    conflict_number: ConflictNumber = ConflictNumber.ONE
 
 
 class SkirmishB(ConflictCard):
 
-    name = "skirmish_b"
-    conflict_number = ConflictNumber.ONE
+    name: str = "skirmish_b"
+    conflict_number: ConflictNumber = ConflictNumber.ONE
 
 
 class SkirmishC(ConflictCard):
 
-    name = "skirmish_c"
-    conflict_number = ConflictNumber.ONE
+    name: str = "skirmish_c"
+    conflict_number: ConflictNumber = ConflictNumber.ONE
 
 
 class SkirmishD(ConflictCard):
 
-    name = "skirmish_d"
-    conflict_number = ConflictNumber.ONE
+    name: str = "skirmish_d"
+    conflict_number: ConflictNumber = ConflictNumber.ONE
 
 
 class SortThroughTheChaos(ConflictCard):
 
-    name = "sort_through_the_chaos"
-    conflict_number = ConflictNumber.TWO
+    name: str = "sort_through_the_chaos"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
 class TerriblePurpose(ConflictCard):
 
-    name = "terrible_purpose"
-    conflict_number = ConflictNumber.TWO
+    name: str = "terrible_purpose"
+    conflict_number: ConflictNumber = ConflictNumber.TWO
+
+
+class ConflictDeck(BaseModel):
+
+    cards: dict[str, ConflictCard] = {}
+
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        cards_dict: dict[ConflictNumber, list[ConflictCard]] = {
+            ConflictNumber.ONE: [],
+            ConflictNumber.TWO: [],
+            ConflictNumber.THREE: [],
+        }
+        for subclass in ConflictCard.__subclasses__():
+            cards_dict[subclass.conflict_number].append(
+                subclass()  # pyright: ignore[reportCallIssue]
+            )
+
+        shuffle(cards_dict[ConflictNumber.ONE])
+        shuffle(cards_dict[ConflictNumber.TWO])
+        shuffle(cards_dict[ConflictNumber.THREE])
+
+        self.cards = {card.name: card for card in cards_dict[ConflictNumber.ONE][:1]}
+        self.cards.update(
+            {card.name: card for card in cards_dict[ConflictNumber.TWO][:5]}
+        )
+        self.cards.update(
+            {card.name: card for card in cards_dict[ConflictNumber.THREE]}
+        )

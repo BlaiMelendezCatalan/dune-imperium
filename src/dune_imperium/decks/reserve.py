@@ -1,30 +1,29 @@
-from abc import ABC, abstractmethod
-from random import shuffle
+from dune_imperium.decks.base import BaseBigCard, BaseDeck
+from dune_imperium.decks.card_states import CardState
+from dune_imperium.factions import Faction
+from dune_imperium.icons import AgentIcon
 
-from dune_imperium.factions import Faction, Factions
-from dune_imperium.icons import AgentIcon, AgentIcons
 
+class ReserveCard(BaseBigCard):
 
-class ReserveCard(ABC):
-
-    name: str
-    repetitions: int
-    factions: Factions = Factions()
+    factions: list[Faction] = []
     cost: int
-    agent_icons: AgentIcons = AgentIcons()
+    state: CardState = CardState.IN_DECK
 
     def acquire(self, player_id: int) -> None:
         # TODO remove from imperium deck and place in player's discard deck. Apply any necessary logic
         ...
 
-    @abstractmethod
     def play_as_agent(self, player_id: int) -> None:
         # TODO apply logic and let the user decide the location of the agent.
         pass
 
-    @abstractmethod
     def play_as_revelation(self, player_id: int) -> None:
         # TODO apply logic
+        pass
+
+    def trash(self):
+        # TODO
         pass
 
 
@@ -32,9 +31,9 @@ class ArrakisLiaison(ReserveCard):
 
     name = "arrakis_liaison"
     repetitions = 8
-    factions = Factions(Faction.FREMEN)
+    factions = [Faction.FREMEN]
     cost = 2
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY)
+    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -46,7 +45,7 @@ class FoldSpace(ReserveCard):
     name = "foldspace"
     repetitions = 6
     cost = 0
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY)
+    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def acquire(self, player_id: int) -> None:
         # TODO Add special extra logic
@@ -62,7 +61,7 @@ class TheSpiceMustFlow(ReserveCard):
     name = "the_spice_must_flow"
     repetitions = 10
     cost = 9
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY)
+    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def acquire(self, player_id: int) -> None:
         super().acquire(player_id)
@@ -73,14 +72,19 @@ class TheSpiceMustFlow(ReserveCard):
     def play_as_revelation(self, player_id: int) -> None: ...
 
 
-class ReserveDeck:
+class ArrakisLiaisonDeck(BaseDeck[ArrakisLiaison]):
 
-    cards: list[ReserveCard]
+    def __init__(self, **data) -> None:
+        super().__init__(ArrakisLiaison, shuffle_deck=False, **data)
 
-    def initialize(self):
-        self.cards = [
-            subclass()
-            for subclass in ReserveCard.__subclasses__()
-            for _ in range(subclass.repetitions)
-        ]
-        shuffle(self.cards)
+
+class FoldSpaceDeck(BaseDeck[FoldSpace]):
+
+    def __init__(self, **data) -> None:
+        super().__init__(FoldSpace, shuffle_deck=False, **data)
+
+
+class TheSpiceMustFlowDeck(BaseDeck[TheSpiceMustFlow]):
+
+    def __init__(self, **data) -> None:
+        super().__init__(TheSpiceMustFlow, shuffle_deck=False, **data)

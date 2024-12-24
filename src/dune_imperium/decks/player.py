@@ -1,42 +1,45 @@
-from dune_imperium.decks.imperium import ImperiumCard
-from dune_imperium.decks.initial import InitialCard, InitialDeck
+from pydantic import BaseModel
+from typing import cast
+
+from dune_imperium.decks.base import BaseBigCard
+from dune_imperium.decks.initial import InitialDeck
 
 
-class PlayerDeck:
+class PlayerDeck(BaseModel):
 
-    cards: list[ImperiumCard | InitialCard]
+    cards: dict[str, BaseBigCard]
 
-    def initialize(self) -> None:
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
         initial_deck = InitialDeck()
-        initial_deck.initialize()
-        self.cards = list(initial_deck.cards)
+        self.cards = cast(dict[str, BaseBigCard], initial_deck.cards)
 
-    def rebuild(self, *cards: InitialCard | ImperiumCard) -> None:
-        # TODO get all cards in discard pile and shuffle
-        ...
+    def rebuild(self, *cards: BaseBigCard) -> None:
+        self.cards = {card.name: card for card in cards}
 
 
-class PlayerHand:
+class Hand(BaseModel):
 
-    cards: list[ImperiumCard | InitialCard]
+    cards: dict[str, BaseBigCard] = {}
 
-    def draw(self, *cards: InitialCard | ImperiumCard) -> None:
-        self.cards = list(cards)
+    def draw(self, *cards: BaseBigCard) -> None:
+        self._cards = {card.name: card for card in cards}
 
-    def play(self, card: InitialCard | ImperiumCard) -> None:
-        # TODO
-        ...
+    def play_as_agent(self, card_name: str, player_id: int) -> None:
+        self._cards[card_name].play_as_agent(player_id)
 
-    def trash(self, card: InitialCard | ImperiumCard) -> None:
-        # TODO
-        ...
+    def reveal(self, player_id: int) -> None:
+        [card.play_as_revelation(player_id) for card in self._cards.values()]
+
+    def trash(self, card_name: str) -> None:
+        self._cards[card_name].trash()
 
 
-class InPlay:
+class InPlay(BaseModel):
 
-    cards: list[ImperiumCard | InitialCard]
+    cards: dict[str, BaseBigCard] = {}
 
-    def add(self, card: InitialCard | ImperiumCard):
+    def add(self, card: BaseBigCard):
         # TODO
         ...
 
@@ -44,15 +47,19 @@ class InPlay:
         # TODO
         ...
 
-
-class DiscardPile:
-
-    cards: list[ImperiumCard | InitialCard] = []
-
-    def add(self, card: InitialCard | ImperiumCard):
+    def trash(self) -> None:
         # TODO
         ...
 
-    def trash(self, card: InitialCard | ImperiumCard) -> None:
+
+class DiscardPile(BaseModel):
+
+    cards: dict[str, BaseBigCard] = {}
+
+    def add(self, card: BaseBigCard):
+        # TODO
+        ...
+
+    def trash(self, card: BaseBigCard) -> None:
         # TODO
         ...

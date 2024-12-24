@@ -1,21 +1,29 @@
 from abc import ABC, abstractmethod
+from pydantic import BaseModel
 
 from dune_imperium.icons import AgentIcon
 from dune_imperium.map.control import Control, SolariControl, SpiceControl
+from dune_imperium.tokens.resources import Resources
 
 
-class Location(ABC):
+class Cost(BaseModel):
+
+    resources: dict[Resources, int] = {}
+    fremen_influence: int = 0
+
+
+class Location(BaseModel, ABC):
 
     name: str
     agent_icon: AgentIcon
     combat: bool = False
     control: Control | None = None
+    cost: Cost = Cost()
     free: bool = True
 
     @abstractmethod
     def pay(self, player_id: int) -> None:
-        # TODO This calls API to modify game state (player resources, troop deployment, influence, aliance tokens, ...)
-        # or to say payment was not successful
+        # TODO This calls API to modify game state (player resources) or to say payment was not successful
         pass
 
     @abstractmethod
@@ -351,14 +359,18 @@ class Wealth(Location):
         ...
 
 
-class Locations:
+class Locations(BaseModel):
 
-    locations: list[Location]
+    locations: list[Location] = []
 
-    def initialize(self):
+    def __init__(self, **data) -> None:
+        super.__init__(**data)
         self.locations = [
-            subclass()
+            subclass()  # pyright: ignore[reportCallIssue]
             for subclass in Location.__subclasses__()
             if subclass is not SpiceLocation
         ]
-        self.locations += [subclass() for subclass in SpiceLocation.__subclasses__()]
+        self.locations += [
+            subclass()  # pyright: ignore[reportCallIssue]
+            for subclass in SpiceLocation.__subclasses__()
+        ]

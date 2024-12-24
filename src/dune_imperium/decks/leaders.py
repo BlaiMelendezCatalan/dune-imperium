@@ -1,4 +1,7 @@
-class Leader:
+from pydantic import BaseModel
+
+
+class Leader(BaseModel):
 
     name: str
 
@@ -13,47 +16,51 @@ class Leader:
 
 class BaronVladimirHarkonnen(Leader):
 
-    name = "baron_vladimir_harkonnen"
+    name: str = "baron_vladimir_harkonnen"
 
 
 class CountessArianaThorvald(Leader):
 
-    name = "countess_ariana_thorvald"
+    name: str = "countess_ariana_thorvald"
 
 
 class CountIlbanRichese(Leader):
 
-    name = "count_ilban_richese"
+    name: str = "count_ilban_richese"
 
 
 class CountMemnonThorvald(Leader):
 
-    name = "count_memnon_throvald"
+    name: str = "count_memnon_throvald"
 
 
 class DukeaLetoAtreides(Leader):
 
-    name = "duke_leto_atreides"
+    name: str = "duke_leto_atreides"
 
 
 class GlossuRabban(Leader):
 
-    name = "glossu_rabban"
+    name: str = "glossu_rabban"
 
 
 class HelenaRichese(Leader):
 
-    name = "helena_richese"
+    name: str = "helena_richese"
 
 
 class PaulAtreides(Leader):
 
-    name = "paul_atraides"
+    name: str = "paul_atraides"
 
 
-class LeaderDeck:
+class LeaderDeck(BaseModel):
 
-    leaders: list[Leader]
+    leaders: list[Leader] = []
 
-    def initialize(self) -> None:
-        self.leaders = [subclass() for subclass in Leader.__subclasses__()]
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        self.leaders = [
+            subclass()  # pyright: ignore[reportCallIssue]
+            for subclass in Leader.__subclasses__()
+        ]

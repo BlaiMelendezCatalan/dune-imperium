@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from pydantic import BaseModel
 
 
-class Control(ABC):
+class Control(BaseModel, ABC):
 
     def add_troop(self) -> None:
         # Implement here

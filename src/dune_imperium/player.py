@@ -1,74 +1,70 @@
+from pydantic import BaseModel
+
+from dune_imperium.decks.player import DiscardPile, PlayerDeck, Hand
 from dune_imperium.decks.leaders import Leader
-from dune_imperium.factions import Faction
-from dune_imperium.map.trackers import InfluenceTracker, VictoryPointsTracker
-from dune_imperium.tokens import Agents, Troops
+from dune_imperium.map.trackers import InfluenceTracker
+from dune_imperium.tokens.agents import Agent
+from dune_imperium.tokens.troops import Troop
+from dune_imperium.tokens.resources import Resources
 
 
-class Player:
+class Player(BaseModel):
 
-    _water: int = 1
-    _solari: int = 0
-    _spice: int = 0
+    id: int
 
-    _troops: Troops = Troops()
+    leader: Leader
 
-    _influence_trackers: dict[str, InfluenceTracker] = {
-        faction.value: InfluenceTracker() for faction in Faction
+    first_player: bool
+
+    victory_points: int
+
+    resources: dict[Resources, int] = {
+        Resources.WATER: 1,
+        Resources.SOLARI: 0,
+        Resources.SPICE: 0,
     }
 
-    def __init__(
-        self,
-        id: int,
-        username: str,
-        color: str,
-        leader: Leader,
-        initial_victory_points: int,
-        first_player: bool = False,
-    ):
-        self._id = id
-        self._username = username
-        self._color = color
-        self._leader = leader
-        self._agents = Agents(id)
-        self._victory_points = VictoryPointsTracker(initial_victory_points)
-        self._first_player = first_player
+    agents: list[Agent] = [Agent() for _ in range(2)]
+
+    troops: list[Troop] = [Troop() for _ in range(16)]
+
+    fremen_influence: InfluenceTracker = InfluenceTracker()
+    bene_gesserit_influence: InfluenceTracker = InfluenceTracker()
+    spacing_guild_influence: InfluenceTracker = InfluenceTracker()
+    emperor_influence: InfluenceTracker = InfluenceTracker()
+
+    deck: PlayerDeck = PlayerDeck()
+    hand: Hand = Hand()
+    discard_pile: DiscardPile = DiscardPile()
 
     @property
     def water(self) -> int:
-        return self._water
+        return self.resources[Resources.WATER]
 
     @water.setter
     def water(self, value: int) -> None:
-        self._water = value
+        self.resources[Resources.WATER] = value
 
     @property
     def solari(self) -> int:
-        return self._solari
+        return self.resources[Resources.SOLARI]
 
     @solari.setter
     def solari(self, value: int) -> None:
-        self._solari = value
+        self.resources[Resources.SOLARI] = value
 
     @property
     def spice(self) -> int:
-        return self._spice
+        return self.resources[Resources.SPICE]
 
     @spice.setter
     def spice(self, value: int) -> None:
-        self._spice = value
+        self.resources[Resources.SPICE] = value
 
-    @property
-    def troops(self) -> Troops:
-        return self._troops
+    def play_card_as_agent(self, card_name):
+        if all([agent.deployed for agent in self.agents]):
+            return  # TODO this should trigger a pop-up saying there are no more agents to deploy
+        self.hand.cards[card_name].play_as_agent(self.id)
 
-    @property
-    def first_player(self) -> bool:
-        return self._first_player
-
-    @property
-    def influence_trackers(self) -> dict[str, InfluenceTracker]:
-        return self._influence_trackers
-
-    @property
-    def victory_points(self) -> int:
-        return self._victory_points.victory_points
+    def reveal(self):
+        self.hand.reveal(self.id)

@@ -1,47 +1,42 @@
-from abc import ABC, abstractmethod
-from random import shuffle
+import httpx
 
-from dune_imperium.factions import Faction, Factions
-from dune_imperium.icons import AgentIcon, AgentIcons
+from dune_imperium.decks.base import BaseBigCard, BaseDeck
+from dune_imperium.decks.card_states import CardState
+from dune_imperium.factions import Faction
+from dune_imperium.icons import AgentIcon
 
 
-class ImperiumCard(ABC):
+class ImperiumCard(BaseBigCard):
 
-    name: str
-    repetitions: int = 1
-    exposed: bool = False
-    factions: Factions = Factions()
+    factions: list[Faction] = []
     cost: int
-    agent_icons: AgentIcons = AgentIcons()
+    state: CardState = CardState.IN_DECK
 
     def acquire(self, player_id: int) -> None:
         # TODO check exposed. Remove from imperium deck and place in player's discard deck. Apply any necessary logic
         ...
 
     def expose(self):
-        self.exposed = True
+        self.state = CardState.EXPOSED
+
+    def play_as_agent(self, player_id: int) -> None:
+        httpx.post("http://127.0.0.1:5432/")  # TODO fix
+
+    def play_as_revelation(self, player_id: int) -> None:
+        # TODO apply logic
+        pass
 
     def trash(self):
         # TODO
-        ...
-
-    @abstractmethod
-    def play_as_agent(self, player_id: int) -> None:
-        # TODO apply logic and let the user decide the location of the agent.
-        pass
-
-    @abstractmethod
-    def play_as_revelation(self, player_id: int) -> None:
-        # TODO apply logic
         pass
 
 
 class ArrakisRecruiter(ImperiumCard):
 
-    name = "arrakis_recruiter"
-    repetitions = 2
-    cost = 2
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    name: str = "arrakis_recruiter"
+    repetitions: int = 2
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -50,9 +45,9 @@ class ArrakisRecruiter(ImperiumCard):
 
 class AssassinationMission(ImperiumCard):
 
-    name = "assassination_mission"
-    repetitions = 2
-    cost = 1
+    name: str = "assassination_mission"
+    repetitions: int = 2
+    cost: int = 1
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -61,11 +56,15 @@ class AssassinationMission(ImperiumCard):
 
 class BeneGesseritInitiate(ImperiumCard):
 
-    name = "bene_gesserit_initiate"
-    repetitions = 2
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "bene_gesserit_initiate"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [
+        AgentIcon.LANDSRAAT,
+        AgentIcon.CITY,
+        AgentIcon.SPICE_TRADE,
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -74,11 +73,11 @@ class BeneGesseritInitiate(ImperiumCard):
 
 class BeneGesseritSister(ImperiumCard):
 
-    name = "bene_gesserit_sister"
-    repetitions = 3
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.BENE_GESSERIT, AgentIcon.LANDSRAAT)
+    name: str = "bene_gesserit_sister"
+    repetitions: int = 3
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [AgentIcon.BENE_GESSERIT, AgentIcon.LANDSRAAT]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -87,9 +86,9 @@ class BeneGesseritSister(ImperiumCard):
 
 class Carryall(ImperiumCard):
 
-    name = "carryall"
-    cost = 5
-    agent_icons = AgentIcons(AgentIcon.SPICE_TRADE)
+    name: str = "carryall"
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -98,10 +97,14 @@ class Carryall(ImperiumCard):
 
 class Chani(ImperiumCard):
 
-    name = "chani"
-    factions = Factions(Faction.FREMEN)
-    cost = 5
-    agent_icons = AgentIcons(AgentIcon.FREMEN, AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "chani"
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [
+        AgentIcon.FREMEN,
+        AgentIcon.CITY,
+        AgentIcon.SPICE_TRADE,
+    ]
 
     def acquire(self, player_id: int) -> None:
         super().acquire(player_id)
@@ -114,8 +117,8 @@ class Chani(ImperiumCard):
 
 class ChoamDirectorship(ImperiumCard):
 
-    name = "choam_directorship"
-    cost = 8
+    name: str = "choam_directorship"
+    cost: int = 8
 
     def acquire(self, player_id: int) -> None:
         super().acquire(player_id)
@@ -128,10 +131,10 @@ class ChoamDirectorship(ImperiumCard):
 
 class Crysknife(ImperiumCard):
 
-    name = "crysknife"
-    factions = Factions(Faction.FREMEN)
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.FREMEN, AgentIcon.SPICE_TRADE)
+    name: str = "crysknife"
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -140,9 +143,9 @@ class Crysknife(ImperiumCard):
 
 class DoctorYueh(ImperiumCard):
 
-    name = "doctor_yueh"
-    cost = 1
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    name: str = "doctor_yueh"
+    cost: int = 1
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -151,9 +154,9 @@ class DoctorYueh(ImperiumCard):
 
 class DuncanIdaho(ImperiumCard):
 
-    name = "duncan_idaho"
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    name: str = "duncan_idaho"
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -162,11 +165,11 @@ class DuncanIdaho(ImperiumCard):
 
 class FedaykinDeathCommando(ImperiumCard):
 
-    name = "fedaykin_death_commando"
-    repetitions = 2
-    factions = Factions(Faction.FREMEN)
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "fedaykin_death_commando"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -175,10 +178,10 @@ class FedaykinDeathCommando(ImperiumCard):
 
 class FirmGrip(ImperiumCard):
 
-    name = "firm_grip"
-    factions = Factions(Faction.EMPEROR)
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.EMPEROR, AgentIcon.LANDSRAAT)
+    name: str = "firm_grip"
+    factions: list[Faction] = [Faction.EMPEROR]
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.LANDSRAAT]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -187,11 +190,11 @@ class FirmGrip(ImperiumCard):
 
 class FremenCamp(ImperiumCard):
 
-    name = "fremen_camp"
-    repetitions = 2
-    factions = Factions(Faction.FREMEN)
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.SPICE_TRADE)
+    name: str = "fremen_camp"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -200,11 +203,11 @@ class FremenCamp(ImperiumCard):
 
 class GeneManipulation(ImperiumCard):
 
-    name = "gene_manipulation"
-    repetitions = 2
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY)
+    name: str = "gene_manipulation"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -213,11 +216,11 @@ class GeneManipulation(ImperiumCard):
 
 class GuildAdministrator(ImperiumCard):
 
-    name = "guild_administrator"
-    repetitions = 2
-    factions = Factions(Faction.SPACING_GUILD)
-    cost = 2
-    agent_icons = AgentIcons(AgentIcon.SPACING_GUILD, AgentIcon.SPICE_TRADE)
+    name: str = "guild_administrator"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.SPACING_GUILD]
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.SPACING_GUILD, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -226,10 +229,10 @@ class GuildAdministrator(ImperiumCard):
 
 class GuildAmbassador(ImperiumCard):
 
-    name = "guild_ambassador"
-    factions = Factions(Faction.SPACING_GUILD)
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT)
+    name: str = "guild_ambassador"
+    factions: list[Faction] = [Faction.SPACING_GUILD]
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -238,12 +241,14 @@ class GuildAmbassador(ImperiumCard):
 
 class GuildBankers(ImperiumCard):
 
-    name = "guild_bankers"
-    factions = Factions(Faction.SPACING_GUILD)
-    cost = 3
-    agent_icons = AgentIcons(
-        AgentIcon.EMPEROR, AgentIcon.SPACING_GUILD, AgentIcon.LANDSRAAT
-    )
+    name: str = "guild_bankers"
+    factions: list[Faction] = [Faction.SPACING_GUILD]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [
+        AgentIcon.EMPEROR,
+        AgentIcon.SPACING_GUILD,
+        AgentIcon.LANDSRAAT,
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -252,10 +257,10 @@ class GuildBankers(ImperiumCard):
 
 class GunThopter(ImperiumCard):
 
-    name = "gun_thopter"
-    repetitions = 2
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "gun_thopter"
+    repetitions: int = 2
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -264,9 +269,9 @@ class GunThopter(ImperiumCard):
 
 class GurneyHalleck(ImperiumCard):
 
-    name = "gurney_halleck"
-    cost = 6
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    name: str = "gurney_halleck"
+    cost: int = 6
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -275,11 +280,11 @@ class GurneyHalleck(ImperiumCard):
 
 class ImperialSpy(ImperiumCard):
 
-    name = "imperial_spy"
-    repetitions = 2
-    factions = Factions(Faction.EMPEROR)
-    cost = 2
-    agent_icons = AgentIcons(AgentIcon.EMPEROR)
+    name: str = "imperial_spy"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.EMPEROR]
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -288,10 +293,10 @@ class ImperialSpy(ImperiumCard):
 
 class KwisatzHaderach(ImperiumCard):
 
-    name = "kwisatz_haderach"
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 8
-    agent_icons = AgentIcons()
+    name: str = "kwisatz_haderach"
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 8
+    agent_icons: list[AgentIcon] = []
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -301,15 +306,15 @@ class KwisatzHaderach(ImperiumCard):
 
 class LadyJessica(ImperiumCard):
 
-    name = "lady_jessica"
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 7
-    agent_icons = AgentIcons(
+    name: str = "lady_jessica"
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 7
+    agent_icons: list[AgentIcon] = [
         AgentIcon.BENE_GESSERIT,
         AgentIcon.LANDSRAAT,
         AgentIcon.CITY,
         AgentIcon.SPICE_TRADE,
-    )
+    ]
 
     def acquire(self, player_id: int) -> None:
         super().acquire(player_id)
@@ -322,10 +327,10 @@ class LadyJessica(ImperiumCard):
 
 class LietKynes(ImperiumCard):
 
-    name = "liet_kynes"
-    factions = Factions(Faction.EMPEROR, Faction.FREMEN)
-    cost = 5
-    agent_icons = AgentIcons(AgentIcon.FREMEN, AgentIcon.CITY)
+    name: str = "liet_kynes"
+    factions: list[Faction] = [Faction.EMPEROR, Faction.FREMEN]
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.CITY]
 
     def acquire(self, player_id: int) -> None:
         super().acquire(player_id)
@@ -338,11 +343,11 @@ class LietKynes(ImperiumCard):
 
 class MissionariaProtectiva(ImperiumCard):
 
-    name = "missionaria_protectiva"
-    repetitions = 2
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 1
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    name: str = "missionaria_protectiva"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 1
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -351,10 +356,10 @@ class MissionariaProtectiva(ImperiumCard):
 
 class Opulence(ImperiumCard):
 
-    name = "opulence"
-    factions = Factions(Faction.EMPEROR)
-    cost = 6
-    agent_icons = AgentIcons(AgentIcon.EMPEROR)
+    name: str = "opulence"
+    factions: list[Faction] = [Faction.EMPEROR]
+    cost: int = 6
+    agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -363,10 +368,10 @@ class Opulence(ImperiumCard):
 
 class OtherMemory(ImperiumCard):
 
-    name = "other_memory"
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "other_memory"
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -375,9 +380,9 @@ class OtherMemory(ImperiumCard):
 
 class PiterDeVries(ImperiumCard):
 
-    name = "piter_de_vries"
-    cost = 5
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.CITY)
+    name: str = "piter_de_vries"
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -386,15 +391,15 @@ class PiterDeVries(ImperiumCard):
 
 class PowerPlay(ImperiumCard):
 
-    name = "power_play"
-    repetitions = 3
-    cost = 5
-    agent_icons = AgentIcons(
+    name: str = "power_play"
+    repetitions: int = 3
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [
         AgentIcon.EMPEROR,
         AgentIcon.SPACING_GUILD,
         AgentIcon.BENE_GESSERIT,
         AgentIcon.FREMEN,
-    )
+    ]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -404,10 +409,10 @@ class PowerPlay(ImperiumCard):
 
 class ReverendMotherMohiam(ImperiumCard):
 
-    name = "reverend_mother_mohiam"
-    factions = Factions(Faction.EMPEROR, Faction.BENE_GESSERIT)
-    cost = 6
-    agent_icons = AgentIcons(AgentIcon.EMPEROR, AgentIcon.BENE_GESSERIT)
+    name: str = "reverend_mother_mohiam"
+    factions: list[Faction] = [Faction.EMPEROR, Faction.BENE_GESSERIT]
+    cost: int = 6
+    agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.BENE_GESSERIT]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -416,11 +421,11 @@ class ReverendMotherMohiam(ImperiumCard):
 
 class SardaukarInfantry(ImperiumCard):
 
-    name = "sardaukar_infantry"
-    repetitions = 2
-    factions = Factions(Faction.EMPEROR)
-    cost = 1
-    agent_icons = AgentIcons()
+    name: str = "sardaukar_infantry"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.EMPEROR]
+    cost: int = 1
+    agent_icons: list[AgentIcon] = []
 
     def play_as_agent(self, player_id: int): ...
 
@@ -429,11 +434,11 @@ class SardaukarInfantry(ImperiumCard):
 
 class SardaukarLegion(ImperiumCard):
 
-    name = "sardaukar_legion"
-    repetitions = 2
-    factions = Factions(Faction.EMPEROR)
-    cost = 5
-    agent_icons = AgentIcons(AgentIcon.EMPEROR, AgentIcon.LANDSRAAT)
+    name: str = "sardaukar_legion"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.EMPEROR]
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.LANDSRAAT]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -442,10 +447,10 @@ class SardaukarLegion(ImperiumCard):
 
 class Scout(ImperiumCard):
 
-    name = "scout"
-    repetitions = 2
-    cost = 1
-    agent_icons = AgentIcons(AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "scout"
+    repetitions: int = 2
+    cost: int = 1
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -454,10 +459,10 @@ class Scout(ImperiumCard):
 
 class ShiftingAllegiances(ImperiumCard):
 
-    name = "shifting_allegiances"
-    repetitions = 2
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.LANDSRAAT, AgentIcon.SPICE_TRADE)
+    name: str = "shifting_allegiances"
+    repetitions: int = 2
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -466,10 +471,10 @@ class ShiftingAllegiances(ImperiumCard):
 
 class SietchReverendMother(ImperiumCard):
 
-    name = "sietch_reverend_mother"
-    factions = Factions(Faction.BENE_GESSERIT, Faction.FREMEN)
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.BENE_GESSERIT, AgentIcon.FREMEN)
+    name: str = "sietch_reverend_mother"
+    factions: list[Faction] = [Faction.BENE_GESSERIT, Faction.FREMEN]
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.BENE_GESSERIT, AgentIcon.FREMEN]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -478,11 +483,11 @@ class SietchReverendMother(ImperiumCard):
 
 class SmugglersThopter(ImperiumCard):
 
-    name = "smugglers_thopter"
-    repetitions = 2
-    factions = Factions(Faction.SPACING_GUILD)
-    cost = 4
-    agent_icons = AgentIcons(AgentIcon.SPICE_TRADE)
+    name: str = "smugglers_thopter"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.SPACING_GUILD]
+    cost: int = 4
+    agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -491,11 +496,11 @@ class SmugglersThopter(ImperiumCard):
 
 class SpaceTravel(ImperiumCard):
 
-    name = "space_travel"
-    repetitions = 2
-    factions = Factions(Faction.SPACING_GUILD)
-    cost = 3
-    agent_icons = AgentIcons(AgentIcon.SPACING_GUILD)
+    name: str = "space_travel"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.SPACING_GUILD]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [AgentIcon.SPACING_GUILD]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -504,11 +509,11 @@ class SpaceTravel(ImperiumCard):
 
 class SpiceHunter(ImperiumCard):
 
-    name = "spice_hunter"
-    repetitions = 2
-    factions = Factions(Faction.FREMEN)
-    cost = 2
-    agent_icons = AgentIcons(AgentIcon.FREMEN, AgentIcon.SPICE_TRADE)
+    name: str = "spice_hunter"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -517,11 +522,11 @@ class SpiceHunter(ImperiumCard):
 
 class SpiceSmugglers(ImperiumCard):
 
-    name = "spice_smugglers"
-    repetitions = 2
-    factions = Factions(Faction.SPACING_GUILD)
-    cost = 2
-    agent_icons = AgentIcons(AgentIcon.CITY)
+    name: str = "spice_smugglers"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.SPACING_GUILD]
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -530,10 +535,14 @@ class SpiceSmugglers(ImperiumCard):
 
 class Stilgar(ImperiumCard):
 
-    name = "stilgar"
-    factions = Factions(Faction.FREMEN)
-    cost = 5
-    agent_icons = AgentIcons(AgentIcon.FREMEN, AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "stilgar"
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [
+        AgentIcon.FREMEN,
+        AgentIcon.CITY,
+        AgentIcon.SPICE_TRADE,
+    ]
 
     def play_as_agent(self, player_id: int): ...
 
@@ -542,12 +551,14 @@ class Stilgar(ImperiumCard):
 
 class TesteOfHumanity(ImperiumCard):
 
-    name = "test_of_humanity"
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 3
-    agent_icons = AgentIcons(
-        AgentIcon.BENE_GESSERIT, AgentIcon.LANDSRAAT, AgentIcon.CITY
-    )
+    name: str = "test_of_humanity"
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 3
+    agent_icons: list[AgentIcon] = [
+        AgentIcon.BENE_GESSERIT,
+        AgentIcon.LANDSRAAT,
+        AgentIcon.CITY,
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -556,11 +567,11 @@ class TesteOfHumanity(ImperiumCard):
 
 class TheVoice(ImperiumCard):
 
-    name = "the_voice"
-    repetitions = 2
-    factions = Factions(Faction.BENE_GESSERIT)
-    cost = 2
-    agent_icons = AgentIcons(AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "the_voice"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.BENE_GESSERIT]
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -569,16 +580,16 @@ class TheVoice(ImperiumCard):
 
 class ThufirHawat(ImperiumCard):
 
-    name = "thufir_hawat"
-    cost = 5
-    agent_icons = AgentIcons(
+    name: str = "thufir_hawat"
+    cost: int = 5
+    agent_icons: list[AgentIcon] = [
         AgentIcon.EMPEROR,
         AgentIcon.SPACING_GUILD,
         AgentIcon.BENE_GESSERIT,
         AgentIcon.FREMEN,
         AgentIcon.CITY,
         AgentIcon.SPICE_TRADE,
-    )
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -587,25 +598,18 @@ class ThufirHawat(ImperiumCard):
 
 class WormRiders(ImperiumCard):
 
-    name = "worm_riders"
-    repetitions = 2
-    factions = Factions(Faction.FREMEN)
-    cost = 6
-    agent_icons = AgentIcons(AgentIcon.CITY, AgentIcon.SPICE_TRADE)
+    name: str = "worm_riders"
+    repetitions: int = 2
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 6
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
     def play_as_revelation(self, player_id: int) -> None: ...
 
 
-class ImperiumDeck:
+class ImperiumDeck(BaseDeck[ImperiumCard]):
 
-    cards: list[ImperiumCard]
-
-    def initialize(self):
-        self.cards = [
-            subclass()
-            for subclass in ImperiumCard.__subclasses__()
-            for _ in range(subclass.repetitions)
-        ]
-        shuffle(self.cards)
+    def __init__(self, **data) -> None:
+        super().__init__(ImperiumCard, shuffle_deck=True, **data)
