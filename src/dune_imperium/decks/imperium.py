@@ -2,8 +2,8 @@ import httpx
 
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.decks.card_states import CardState
-from dune_imperium.factions import Faction
-from dune_imperium.icons import AgentIcon
+from dune_imperium.decks.factions import Faction
+from dune_imperium.agent_icons.icons import AgentIcon
 
 
 class ImperiumCard(BaseBigCard):

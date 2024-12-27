@@ -1,7 +1,7 @@
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.decks.card_states import CardState
-from dune_imperium.factions import Faction
-from dune_imperium.icons import AgentIcon
+from dune_imperium.decks.factions import Faction
+from dune_imperium.agent_icons.icons import AgentIcon
 
 
 class ReserveCard(BaseBigCard):
@@ -29,11 +29,11 @@ class ReserveCard(BaseBigCard):
 
 class ArrakisLiaison(ReserveCard):
 
-    name = "arrakis_liaison"
-    repetitions = 8
-    factions = [Faction.FREMEN]
-    cost = 2
-    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+    name: str = "arrakis_liaison"
+    repetitions: int = 8
+    factions: list[Faction] = [Faction.FREMEN]
+    cost: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -42,10 +42,10 @@ class ArrakisLiaison(ReserveCard):
 
 class FoldSpace(ReserveCard):
 
-    name = "foldspace"
-    repetitions = 6
-    cost = 0
-    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+    name: str = "foldspace"
+    repetitions: int = 6
+    cost: int = 0
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def acquire(self, player_id: int) -> None:
         # TODO Add special extra logic
@@ -58,10 +58,10 @@ class FoldSpace(ReserveCard):
 
 class TheSpiceMustFlow(ReserveCard):
 
-    name = "the_spice_must_flow"
-    repetitions = 10
-    cost = 9
-    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+    name: str = "the_spice_must_flow"
+    repetitions: int = 10
+    cost: int = 9
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
     def acquire(self, player_id: int) -> None:
         super().acquire(player_id)

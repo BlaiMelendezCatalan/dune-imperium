@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
-from dune_imperium.icons import AgentIcon
+from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.map.control import Control, SolariControl, SpiceControl
 from dune_imperium.tokens.resources import Resources
 
@@ -17,7 +17,7 @@ class Location(BaseModel, ABC):
     name: str
     agent_icon: AgentIcon
     combat: bool = False
-    control: Control | None = None
+    control: Control | None | None = None
     cost: Cost = Cost()
     free: bool = True
 
@@ -37,7 +37,8 @@ class SpiceLocation(Location):
     extra_spice: int = 0
 
     def produce_spice(self):
-        self.extra_spice += 1
+        if self.free:
+            self.extra_spice += 1
 
     @abstractmethod
     def pay(self, player_id: int) -> None:
@@ -50,10 +51,10 @@ class SpiceLocation(Location):
 
 class Arrakeen(Location):
 
-    name = "arrakeen"
-    agent_icon = AgentIcon.CITY
-    combat = True
-    control = SolariControl()
+    name: str = "arrakeen"
+    agent_icon: AgentIcon = AgentIcon.CITY
+    combat: bool = True
+    control: Control | None = SolariControl()
 
     def pay(self, player_id: int) -> None:
         return
@@ -65,10 +66,10 @@ class Arrakeen(Location):
 
 class Carthag(Location):
 
-    name = "carthag"
-    agent_icon = AgentIcon.CITY
-    combat = True
-    control = SolariControl()
+    name: str = "carthag"
+    agent_icon: AgentIcon = AgentIcon.CITY
+    combat: bool = True
+    control: Control | None = SolariControl()
 
     def pay(self, player_id: int) -> None:
         return
@@ -80,8 +81,8 @@ class Carthag(Location):
 
 class Conspire(Location):
 
-    name = "conspire"
-    agent_icon = AgentIcon.EMPEROR
+    name: str = "conspire"
+    agent_icon: AgentIcon = AgentIcon.EMPEROR
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -94,8 +95,8 @@ class Conspire(Location):
 
 class FoldSpace(Location):
 
-    name = "fold_space"
-    agent_icon = AgentIcon.SPACING_GUILD
+    name: str = "fold_space"
+    agent_icon: AgentIcon = AgentIcon.SPACING_GUILD
 
     def pay(self, player_id: int) -> None:
         return
@@ -107,9 +108,9 @@ class FoldSpace(Location):
 
 class TheGreatFlat(SpiceLocation):
 
-    name = "the_great_flat"
-    agent_icon = AgentIcon.SPICE_TRADE
-    combat = True
+    name: str = "the_great_flat"
+    agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         return
@@ -121,9 +122,9 @@ class TheGreatFlat(SpiceLocation):
 
 class HaggaBasin(SpiceLocation):
 
-    name = "hagga_basin"
-    agent_icon = AgentIcon.SPICE_TRADE
-    combat = True
+    name: str = "hagga_basin"
+    agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -136,8 +137,8 @@ class HaggaBasin(SpiceLocation):
 
 class HallOfOratory(Location):
 
-    name = "hall_of_oratory"
-    agent_icon = AgentIcon.LANDSRAAT
+    name: str = "hall_of_oratory"
+    agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
     def pay(self, player_id: int) -> None:
         return
@@ -149,9 +150,9 @@ class HallOfOratory(Location):
 
 class HardyWarriors(Location):
 
-    name = "hardy_warriors"
-    agent_icon = AgentIcon.FREMEN
-    combat = True
+    name: str = "hardy_warriors"
+    agent_icon: AgentIcon = AgentIcon.FREMEN
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -164,9 +165,9 @@ class HardyWarriors(Location):
 
 class Heighliner(Location):
 
-    name = "heighliner"
-    agent_icon = AgentIcon.SPACING_GUILD
-    combat = True
+    name: str = "heighliner"
+    agent_icon: AgentIcon = AgentIcon.SPACING_GUILD
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -179,8 +180,8 @@ class Heighliner(Location):
 
 class HighCouncil(Location):
 
-    name = "high_council"
-    agent_icon = AgentIcon.LANDSRAAT
+    name: str = "high_council"
+    agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -193,10 +194,10 @@ class HighCouncil(Location):
 
 class ImperialBasin(SpiceLocation):
 
-    name = "imperial_basin"
-    agent_icon = AgentIcon.SPICE_TRADE
-    combat = True
-    control = SpiceControl()
+    name: str = "imperial_basin"
+    agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
+    combat: bool = True
+    control: Control | None = SpiceControl()
 
     def pay(self, player_id: int) -> None:
         return
@@ -208,8 +209,8 @@ class ImperialBasin(SpiceLocation):
 
 class Mentat(Location):
 
-    name = "mentat"
-    agent_icon = AgentIcon.LANDSRAAT
+    name: str = "mentat"
+    agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -222,8 +223,8 @@ class Mentat(Location):
 
 class RallyTroops(Location):
 
-    name = "rally_troops"
-    agent_icon = AgentIcon.LANDSRAAT
+    name: str = "rally_troops"
+    agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -236,9 +237,9 @@ class RallyTroops(Location):
 
 class ResearchStation(Location):
 
-    name = "research_location"
-    agent_icon = AgentIcon.CITY
-    combat = True
+    name: str = "research_location"
+    agent_icon: AgentIcon = AgentIcon.CITY
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -251,8 +252,8 @@ class ResearchStation(Location):
 
 class Secrets(Location):
 
-    name = "secrets"
-    agent_icon = AgentIcon.BENE_GESSERIT
+    name: str = "secrets"
+    agent_icon: AgentIcon = AgentIcon.BENE_GESSERIT
 
     def pay(self, player_id: int) -> None:
         return
@@ -264,8 +265,8 @@ class Secrets(Location):
 
 class SecureContract(Location):
 
-    name = "secure_contract"
-    agent_icon = AgentIcon.SPICE_TRADE
+    name: str = "secure_contract"
+    agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
 
     def pay(self, player_id: int) -> None:
         return
@@ -277,8 +278,8 @@ class SecureContract(Location):
 
 class SelectiveBreeding(Location):
 
-    name = "selective_breeding"
-    agent_icon = AgentIcon.BENE_GESSERIT
+    name: str = "selective_breeding"
+    agent_icon: AgentIcon = AgentIcon.BENE_GESSERIT
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -291,8 +292,8 @@ class SelectiveBreeding(Location):
 
 class SellMelange(Location):
 
-    name = "sell_melange"
-    agent_icon = AgentIcon.SPICE_TRADE
+    name: str = "sell_melange"
+    agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -305,9 +306,9 @@ class SellMelange(Location):
 
 class SietchTabr(Location):
 
-    name = "sietch_tabr"
-    agent_icon = AgentIcon.CITY
-    combat = True
+    name: str = "sietch_tabr"
+    agent_icon: AgentIcon = AgentIcon.CITY
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -320,9 +321,9 @@ class SietchTabr(Location):
 
 class Stillsuits(Location):
 
-    name = "stillsuits"
-    agent_icon = AgentIcon.FREMEN
-    combat = True
+    name: str = "stillsuits"
+    agent_icon: AgentIcon = AgentIcon.FREMEN
+    combat: bool = True
 
     def pay(self, player_id: int) -> None:
         return
@@ -334,8 +335,8 @@ class Stillsuits(Location):
 
 class Swordmaster(Location):
 
-    name = "swordmaster"
-    agent_icon = AgentIcon.LANDSRAAT
+    name: str = "swordmaster"
+    agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
     def pay(self, player_id: int) -> None:
         # TODO
@@ -348,8 +349,8 @@ class Swordmaster(Location):
 
 class Wealth(Location):
 
-    name = "wealth"
-    agent_icon = AgentIcon.EMPEROR
+    name: str = "wealth"
+    agent_icon: AgentIcon = AgentIcon.EMPEROR
 
     def pay(self, player_id: int) -> None:
         return
@@ -361,16 +362,18 @@ class Wealth(Location):
 
 class Locations(BaseModel):
 
-    locations: list[Location] = []
+    all_locations: list[Location] = []
+    spice_locations: list[SpiceLocation] = []
 
     def __init__(self, **data) -> None:
-        super.__init__(**data)
-        self.locations = [
+        super().__init__(**data)
+        self.all_locations = [
             subclass()  # pyright: ignore[reportCallIssue]
             for subclass in Location.__subclasses__()
             if subclass is not SpiceLocation
         ]
-        self.locations += [
+        self.spice_locations = [
             subclass()  # pyright: ignore[reportCallIssue]
             for subclass in SpiceLocation.__subclasses__()
         ]
+        self.all_locations += self.spice_locations

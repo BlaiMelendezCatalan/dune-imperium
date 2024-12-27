@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 from pydantic import BaseModel
 
 from dune_imperium.decks.card_states import CardState
-from dune_imperium.icons import AgentIcon
+from dune_imperium.agent_icons.icons import AgentIcon
 
 
 class BaseCard(BaseModel):

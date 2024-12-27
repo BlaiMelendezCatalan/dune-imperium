@@ -14,8 +14,6 @@ class Player(BaseModel):
 
     leader: Leader
 
-    first_player: bool
-
     victory_points: int
 
     resources: dict[Resources, int] = {

@@ -7,7 +7,7 @@ from dune_imperium.decks.initial import InitialDeck
 
 class PlayerDeck(BaseModel):
 
-    cards: dict[str, BaseBigCard]
+    cards: dict[str, BaseBigCard] = {}
 
     def __init__(self, **data) -> None:
         super().__init__(**data)

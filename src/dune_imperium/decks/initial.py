@@ -1,6 +1,6 @@
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.decks.card_states import CardState
-from dune_imperium.icons import AgentIcon
+from dune_imperium.agent_icons.icons import AgentIcon
 
 
 class InitialCard(BaseBigCard):
@@ -22,8 +22,8 @@ class InitialCard(BaseBigCard):
 
 class ConvincingArgument(InitialCard):
 
-    name = "convincing_argument"
-    repetitions = 2
+    name: str = "convincing_argument"
+    repetitions: int = 2
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -32,9 +32,9 @@ class ConvincingArgument(InitialCard):
 
 class Dagger(InitialCard):
 
-    name = "dagger"
-    repetitions = 2
-    agent_icons = [AgentIcon.LANDSRAAT]
+    name: str = "dagger"
+    repetitions: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -43,8 +43,8 @@ class Dagger(InitialCard):
 
 class Diplomacy(InitialCard):
 
-    name = "diplomacy"
-    agent_icons = [
+    name: str = "diplomacy"
+    agent_icons: list[AgentIcon] = [
         AgentIcon.EMPEROR,
         AgentIcon.SPACING_GUILD,
         AgentIcon.BENE_GESSERIT,
@@ -58,9 +58,9 @@ class Diplomacy(InitialCard):
 
 class DuneTheDesertPlanet(InitialCard):
 
-    name = "dune_the_desert_planet"
-    repetitions = 2
-    agent_icons = [AgentIcon.SPICE_TRADE]
+    name: str = "dune_the_desert_planet"
+    repetitions: int = 2
+    agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -69,8 +69,8 @@ class DuneTheDesertPlanet(InitialCard):
 
 class Reconnaissance(InitialCard):
 
-    name = "reconnaissance"
-    agent_icons = [AgentIcon.CITY]
+    name: str = "reconnaissance"
+    agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -79,8 +79,12 @@ class Reconnaissance(InitialCard):
 
 class SignetRing(InitialCard):
 
-    name = "signet_ring"
-    agent_icons = [AgentIcon.LANDSRAAT, AgentIcon.CITY, AgentIcon.SPICE_TRADE]
+    name: str = "signet_ring"
+    agent_icons: list[AgentIcon] = [
+        AgentIcon.LANDSRAAT,
+        AgentIcon.CITY,
+        AgentIcon.SPICE_TRADE,
+    ]
 
     def play_as_agent(self, player_id: int) -> None: ...
 
@@ -89,8 +93,8 @@ class SignetRing(InitialCard):
 
 class SeekAllies(InitialCard):
 
-    name = "seek_allies"
-    agent_icons = [
+    name: str = "seek_allies"
+    agent_icons: list[AgentIcon] = [
         AgentIcon.EMPEROR,
         AgentIcon.SPACING_GUILD,
         AgentIcon.BENE_GESSERIT,
