@@ -26,10 +26,10 @@ class Hand(BaseModel):
         self._cards = {card.name: card for card in cards}
 
     def play_as_agent(self, card_name: str, player_id: int) -> None:
-        self._cards[card_name].play_as_agent(player_id)
+        self._cards[card_name].agent_reward(player_id)
 
     def reveal(self, player_id: int) -> None:
-        [card.play_as_revelation(player_id) for card in self._cards.values()]
+        [card.revelation_reward(player_id) for card in self._cards.values()]
 
     def trash(self, card_name: str) -> None:
         self._cards[card_name].trash()

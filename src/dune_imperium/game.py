@@ -1,8 +1,8 @@
 import random
 from pydantic import BaseModel
 
-from dune_imperium.decks.conflicts import ConflictDeck
-from dune_imperium.decks.imperium import ImperiumDeck
+from dune_imperium.decks.conflicts import ConflictCard, ConflictDeck
+from dune_imperium.decks.imperium import ImperiumDeck, ImperiumExposedDeck
 from dune_imperium.decks.intrigue import IntrigueDeck
 from dune_imperium.decks.reserve import (
     ArrakisLiaisonDeck,
@@ -35,17 +35,24 @@ class Game(BaseModel):
     map: Locations = Locations()
 
     imperium_deck: ImperiumDeck = ImperiumDeck()
+    imperium_exposed_deck: ImperiumExposedDeck = ImperiumExposedDeck()
     intrigue_deck: IntrigueDeck = IntrigueDeck()
     conflict_deck: ConflictDeck = ConflictDeck()
+    conflict_in_play: ConflictCard | None = None
     arrakis_liaison_deck: ArrakisLiaisonDeck = ArrakisLiaisonDeck()
     fold_space_deck: FoldSpaceDeck = FoldSpaceDeck()
     the_spice_must_flow_deck: TheSpiceMustFlowDeck = TheSpiceMustFlowDeck()
 
+    def setup(self) -> None:
+        # Expose first 5 imperium cards
+        self.imperium_exposed_deck.initialize(self.imperium_deck.cards)
+
+        # TODO think what to do with the reserve
+
     def round_start(self) -> None:
         # A new conflict card is exposed
-        self.conflict_deck.trash_exposed()
-        self.conflict_deck.cards[self.round - 1].expose()
-
+        conflict_card = self.conflict_deck.cards.pop(0)
+        self.conflict_in_play = conflict_card
         # Players draw 5 cards
         [player.hand.draw() for player in list(self.players.values())]
 
@@ -72,3 +79,13 @@ class Game(BaseModel):
 
         self.first_player = (self.first_player + 1) % 3
         self.round += 1
+
+    def move_exposed_imperium_card_to_player_discard_pile(
+        self, player_id: int, card_name: str
+    ) -> None:
+        imperium_card = self.imperium_exposed_deck.cards[card_name]
+        self.players[player_id].discard_pile.add(imperium_card)
+
+    def expose_next_imperium_card(self) -> None:
+        imperium_card = self.imperium_deck.cards.pop(0)
+        self.imperium_exposed_deck.add(imperium_card)

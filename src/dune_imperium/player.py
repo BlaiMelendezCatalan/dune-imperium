@@ -22,6 +22,8 @@ class Player(BaseModel):
         Resources.SPICE: 0,
     }
 
+    persuasion: int = 0
+
     agents: list[Agent] = [Agent() for _ in range(2)]
 
     troops: list[Troop] = [Troop() for _ in range(16)]
@@ -62,7 +64,7 @@ class Player(BaseModel):
     def play_card_as_agent(self, card_name):
         if all([agent.deployed for agent in self.agents]):
             return  # TODO this should trigger a pop-up saying there are no more agents to deploy
-        self.hand.cards[card_name].play_as_agent(self.id)
+        self.hand.cards[card_name].agent_reward(self.id)
 
     def reveal(self):
         self.hand.reveal(self.id)

@@ -2,8 +2,6 @@ from enum import Enum
 from pydantic import BaseModel
 from random import shuffle
 
-from dune_imperium.decks.card_states import CardState
-
 
 class ConflictNumber(Enum):
 
@@ -16,19 +14,6 @@ class ConflictCard(BaseModel):
 
     name: str
     conflict_number: ConflictNumber
-    state: CardState = CardState.IN_DECK
-
-    def expose(self) -> None:
-        if self.state == CardState.IN_DECK:
-            self.state = CardState.EXPOSED
-        else:
-            raise RuntimeError("Only in-deck card can be exposed.")
-
-    def trash(self) -> None:
-        if self.state == CardState.EXPOSED:
-            self.state = CardState.TRASHED
-        else:
-            raise RuntimeError("Only exposed card can be trashed.")
 
     def first_prize(self, player_id: int) -> None:
         pass
@@ -171,6 +156,3 @@ class ConflictDeck(BaseModel):
         self.cards = [card for card in cards_dict[ConflictNumber.ONE][:1]]
         self.cards += [card for card in cards_dict[ConflictNumber.TWO][:5]]
         self.cards += [card for card in cards_dict[ConflictNumber.THREE]]
-
-    def trash_exposed(self) -> None:
-        [card.trash() for card in self.cards if card.state == CardState.EXPOSED]

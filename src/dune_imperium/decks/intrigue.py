@@ -1,7 +1,6 @@
 from enum import Enum
 
 from dune_imperium.decks.base import BaseCard, BaseDeck
-from dune_imperium.decks.card_states import CardState
 
 
 class IntrigueType(Enum):
@@ -14,7 +13,6 @@ class IntrigueType(Enum):
 class IntrigueCard(BaseCard):
 
     intrigue_types: list[IntrigueType]
-    state: CardState = CardState.IN_DECK
 
     def effect(self) -> None:
         # TODO trigger the effect of the intrigue card
