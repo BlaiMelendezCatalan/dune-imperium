@@ -20,6 +20,8 @@ from dune_imperium.decks.leaders import (
 
 class Game(BaseModel):
 
+    id: str
+
     name: str
 
     players: dict[int, Player] = {  # TODO these are hardcoded values to make it work

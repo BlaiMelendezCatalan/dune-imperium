@@ -4,6 +4,7 @@ import httpx
 from pydantic import BaseModel
 
 from dune_imperium.agent_icons.icons import AgentIcon
+from dune_imperium.decks.factions import Faction
 
 
 class BaseCard(BaseModel):
@@ -15,6 +16,8 @@ class BaseCard(BaseModel):
 class BaseBigCard(BaseCard):
 
     agent_icons: list[AgentIcon] = []
+    factions: list[Faction] = []
+    persuasion_cost: int = 0
 
     def expose(self): ...
 

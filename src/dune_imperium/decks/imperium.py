@@ -5,10 +5,7 @@ from dune_imperium.decks.factions import Faction
 from dune_imperium.agent_icons.icons import AgentIcon
 
 
-class ImperiumCard(BaseBigCard):
-
-    factions: list[Faction] = []
-    persuasion_cost: int
+class ImperiumCard(BaseBigCard): ...
 
 
 class ArrakisRecruiter(ImperiumCard):

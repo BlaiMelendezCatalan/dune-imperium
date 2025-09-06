@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from dune_imperium.server.routers import big_cards, game, locations
+from dune_imperium.server.routers import game
 
 
 def create_app():
@@ -9,7 +9,7 @@ def create_app():
 
     # TODO feed all routes
     app.include_router(game.make_routes())
-    app.include_router(big_cards.make_routes())
-    app.include_router(locations.make_routes())
+    # app.include_router(big_cards.make_routes())
+    # app.include_router(locations.make_routes())
 
     return app

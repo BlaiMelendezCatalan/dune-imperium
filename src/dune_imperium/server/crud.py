@@ -13,14 +13,18 @@ class Crud:
         self._lock = lock
 
     async def initialize_database(self) -> None:
-        engine = create_async_engine("TODO")
+        engine = create_async_engine(
+            "sqlite+aiosqlite:///./test.db", echo=True
+        )  # TODO: put this in some constants.py file
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
     @asynccontextmanager
     async def _get_session(self, lock_name: str) -> AsyncGenerator[AsyncSession, None]:
         async with self._lock[lock_name]:
-            engine = create_async_engine("TODO")
+            engine = create_async_engine(
+                "sqlite+aiosqlite:///./test.db", echo=True
+            )  # TODO: put this in some constants.py file
             async_session = async_sessionmaker(engine, expire_on_commit=False)
             async with async_session.begin() as session:
                 yield session
@@ -31,7 +35,9 @@ class Crud:
 
     @staticmethod
     def _to_sql(game: Game) -> GameSQL:
-        return GameSQL(state=game.model_dump())
+        return GameSQL(
+            id=game.id, name=game.name, state=game.model_dump_json()
+        )  # TODO maybe add state to Game class?
 
     # async def list_games(self, user_name: str) -> None:
     #     async with self._get_session(lock_name="general") as session:
@@ -42,14 +48,14 @@ class Crud:
             game_sql = self._to_sql(game)
             session.add(game_sql)
 
-    async def delete_game(self, game_name) -> None:
-        async with self._get_session(lock_name=game_name) as session:
-            query = delete(GameSQL).where(GameSQL.name == game_name)
+    async def delete_game(self, game_id) -> None:
+        async with self._get_session(lock_name=game_id) as session:
+            query = delete(GameSQL).where(GameSQL.name == game_id)
             await session.execute(query)
 
-    async def get_game(self, game_name: str) -> Game:
-        async with self._get_session(lock_name=game_name) as session:
-            query = select(GameSQL).where(GameSQL.name == game_name)
+    async def get_game(self, game_id: str) -> Game:
+        async with self._get_session(lock_name=game_id) as session:
+            query = select(GameSQL).where(GameSQL.name == game_id)
             result = await session.execute(query)
             game_sql = result.scalar_one()
             return self._to_pydantic(game_sql)

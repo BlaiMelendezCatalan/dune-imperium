@@ -2,20 +2,23 @@ from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.agent_icons.icons import AgentIcon
 
 
-class ConvincingArgument(BaseBigCard):
+class InitialCard(BaseBigCard): ...
+
+
+class ConvincingArgument(InitialCard):
 
     name: str = "convincing_argument"
     repetitions: int = 2
 
 
-class Dagger(BaseBigCard):
+class Dagger(InitialCard):
 
     name: str = "dagger"
     repetitions: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT]
 
 
-class Diplomacy(BaseBigCard):
+class Diplomacy(InitialCard):
 
     name: str = "diplomacy"
     agent_icons: list[AgentIcon] = [
@@ -26,20 +29,20 @@ class Diplomacy(BaseBigCard):
     ]
 
 
-class DuneTheDesertPlanet(BaseBigCard):
+class DuneTheDesertPlanet(InitialCard):
 
     name: str = "dune_the_desert_planet"
     repetitions: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
 
-class Reconnaissance(BaseBigCard):
+class Reconnaissance(InitialCard):
 
     name: str = "reconnaissance"
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
 
-class SignetRing(BaseBigCard):
+class SignetRing(InitialCard):
 
     name: str = "signet_ring"
     agent_icons: list[AgentIcon] = [
@@ -49,7 +52,7 @@ class SignetRing(BaseBigCard):
     ]
 
 
-class SeekAllies(BaseBigCard):
+class SeekAllies(InitialCard):
 
     name: str = "seek_allies"
     agent_icons: list[AgentIcon] = [
@@ -60,7 +63,7 @@ class SeekAllies(BaseBigCard):
     ]
 
 
-class InitialDeck(BaseDeck[BaseBigCard]):
+class InitialDeck(BaseDeck[InitialCard]):
 
     def __init__(self, **data) -> None:
-        super().__init__(BaseBigCard, shuffle_deck=True, **data)
+        super().__init__(InitialCard, shuffle_deck=True, **data)
