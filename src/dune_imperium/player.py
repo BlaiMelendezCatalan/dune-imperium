@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from dune_imperium.decks.player import DiscardPile, PlayerDeck, Hand
+from dune_imperium.decks.player import DiscardPile, InPlay, Intrigues, Deck, Hand
 from dune_imperium.decks.leaders import Leader
 from dune_imperium.map.trackers import InfluenceTracker
 from dune_imperium.tokens.agents import Agent
@@ -33,9 +33,11 @@ class Player(BaseModel):
     spacing_guild_influence: InfluenceTracker = InfluenceTracker()
     emperor_influence: InfluenceTracker = InfluenceTracker()
 
-    deck: PlayerDeck = PlayerDeck()
+    deck: Deck = Deck()
     hand: Hand = Hand()
+    in_play: InPlay = InPlay()
     discard_pile: DiscardPile = DiscardPile()
+    intrigues: Intrigues = Intrigues()
 
     @property
     def water(self) -> int:
@@ -60,11 +62,6 @@ class Player(BaseModel):
     @spice.setter
     def spice(self, value: int) -> None:
         self.resources[Resources.SPICE] = value
-
-    def play_card_as_agent(self, card_name):
-        if all([agent.deployed for agent in self.agents]):
-            return  # TODO this should trigger a pop-up saying there are no more agents to deploy
-        self.hand.cards[card_name].agent_reward(self.id)
 
     def reveal(self):
         self.hand.reveal(self.id)

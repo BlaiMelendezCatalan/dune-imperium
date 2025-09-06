@@ -28,9 +28,11 @@ class Game(BaseModel):
         2: Player(id=2, leader=CountessArianaThorvald(), victory_points=0),
     }
 
+    round: int = 1
+
     first_player: int = random.randint(0, len(players) - 1)
 
-    round: int = 1
+    current_player: int | None = None
 
     map: Locations = Locations()
 
@@ -45,14 +47,13 @@ class Game(BaseModel):
 
     def setup(self) -> None:
         # Expose first 5 imperium cards
-        self.imperium_exposed_deck.initialize(self.imperium_deck.cards)
-
-        # TODO think what to do with the reserve
+        self.expose_n_imperium_cards(n=5)
+        # Set first player as current player
+        self.current_player = self.first_player
 
     def round_start(self) -> None:
         # A new conflict card is exposed
-        conflict_card = self.conflict_deck.cards.pop(0)
-        self.conflict_in_play = conflict_card
+        self.conflict_in_play = self.conflict_deck.cards.pop(0)
         # Players draw 5 cards
         [player.hand.draw() for player in list(self.players.values())]
 
@@ -78,14 +79,24 @@ class Game(BaseModel):
         # Change first player
 
         self.first_player = (self.first_player + 1) % 3
+        self.current_player = self.first_player
         self.round += 1
 
-    def move_exposed_imperium_card_to_player_discard_pile(
-        self, player_id: int, card_name: str
-    ) -> None:
-        imperium_card = self.imperium_exposed_deck.cards[card_name]
-        self.players[player_id].discard_pile.add(imperium_card)
+    def acquire_exposed_card(self, player_id: int, card_name: str) -> None:
+        if "arrakis_liaison" in card_name:
+            arrakis_liaison_card = self.arrakis_liaison_deck.cards.pop(0)
+            self.players[player_id].discard_pile.add(arrakis_liaison_card)
+        elif "fold_space" in card_name:
+            fold_space_card = self.arrakis_liaison_deck.cards.pop(0)
+            self.players[player_id].discard_pile.add(fold_space_card)
+        elif "the_spice_must_flow" in card_name:
+            the_spice_must_flow_card = self.arrakis_liaison_deck.cards.pop(0)
+            self.players[player_id].discard_pile.add(the_spice_must_flow_card)
+        elif imperium_card := self.imperium_exposed_deck.cards.get(card_name):
+            self.players[player_id].discard_pile.add(imperium_card)
+        else:
+            raise ValueError(f"No exposed card with name: {card_name}.")
 
-    def expose_next_imperium_card(self) -> None:
-        imperium_card = self.imperium_deck.cards.pop(0)
-        self.imperium_exposed_deck.add(imperium_card)
+    def expose_n_imperium_cards(self, n: int) -> None:
+        imperium_cards = [self.imperium_deck.cards.pop(0) for _ in range(n)]
+        self.imperium_exposed_deck.add(imperium_cards)

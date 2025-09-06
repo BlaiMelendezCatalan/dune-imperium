@@ -467,11 +467,8 @@ class ImperiumExposedDeck(BaseModel):
 
     cards: dict[str, ImperiumCard] = {}
 
-    def initialize(self, cards: list[ImperiumCard]) -> None:
-        self.cards = {card.name: card for card in cards}
-
-    def add(self, card: ImperiumCard):
-        self.cards.update({card.name: card})
+    def add(self, cards: list[ImperiumCard]):
+        self.cards.update({card.name: card for card in cards})
 
     def pop(self, card_name: str) -> ImperiumCard:
         return self.cards[card_name]

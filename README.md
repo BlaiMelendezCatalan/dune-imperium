@@ -1,9 +1,11 @@
 https://www.duneimperiumassets.com/
 
 
-# TODO questions:
+# TODOs:
 
-- Do I need locks?
-- Do I need pydantic BaseModel?
-- Do I need async?
-- Do I need dockerization?
+- Dockerization
+
+
+# Extras
+
+- Context manager the get game with crud, yields, and updates game with crud

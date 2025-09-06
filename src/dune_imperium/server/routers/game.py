@@ -21,9 +21,10 @@ def make_routes() -> APIRouter:
     ):
         game = Game(name=game_name)  # TODO still need to manage players
         game.setup()
+        # TODO render using WebSockets
         game.round_start()
+        # TODO render using WebSockets
         await crud.add_game(game)
-        # TODO game.render_state()
 
     # @router.post("/{game_name}/resume_game")
     # async def resume_game(crud: CrudDependency, game_name: str) -> None:

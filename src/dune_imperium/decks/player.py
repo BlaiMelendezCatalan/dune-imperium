@@ -1,21 +1,24 @@
+from random import shuffle
 from pydantic import BaseModel
 from typing import cast
 
 from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.decks.initial import InitialDeck
+from dune_imperium.decks.intrigue import IntrigueCard
 
 
-class PlayerDeck(BaseModel):
+class Deck(BaseModel):
 
-    cards: dict[str, BaseBigCard] = {}
+    cards: list[BaseBigCard] = []
 
     def __init__(self, **data) -> None:
         super().__init__(**data)
         initial_deck = InitialDeck()
-        self.cards = cast(dict[str, BaseBigCard], initial_deck.cards)
+        self.cards = cast(list[BaseBigCard], initial_deck.cards)
 
-    def rebuild(self, *cards: BaseBigCard) -> None:
-        self.cards = {card.name: card for card in cards}
+    def rebuild(self, cards: list[BaseBigCard]) -> None:
+        shuffle(cards)
+        self.cards = cards
 
 
 class Hand(BaseModel):
@@ -61,5 +64,14 @@ class DiscardPile(BaseModel):
         ...
 
     def trash(self, card: BaseBigCard) -> None:
+        # TODO
+        ...
+
+
+class Intrigues(BaseModel):
+
+    cards: dict[str, IntrigueCard] = {}
+
+    def add(self, card: BaseBigCard):
         # TODO
         ...

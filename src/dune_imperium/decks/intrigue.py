@@ -14,8 +14,8 @@ class IntrigueCard(BaseCard):
 
     intrigue_types: list[IntrigueType]
 
-    def effect(self) -> None:
-        # TODO trigger the effect of the intrigue card
+    def play(self) -> None:
+        # TODO trigger the effect of the intrigue card through the API and remove it from player Intrigues deck
         pass
 
 
