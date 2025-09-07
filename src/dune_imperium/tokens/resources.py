@@ -1,8 +1,7 @@
-from enum import Enum
+from pydantic import BaseModel
 
 
-class Resources(Enum):
-
-    WATER = "water"
-    SOLARI = "solari"
-    SPICE = "spice"
+class Resources(BaseModel):
+    water: int = 1
+    solari: int = 0
+    spice: int = 0

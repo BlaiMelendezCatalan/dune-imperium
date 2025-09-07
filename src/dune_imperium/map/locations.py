@@ -1,35 +1,31 @@
-from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.map.control import Control, SolariControl, SpiceControl
-from dune_imperium.tokens.resources import Resources
 
 
 class Cost(BaseModel):
 
-    resources: dict[Resources, int] = {}
+    water: int = 0
+    solari: int = 0
+    spirce: int = 0
     fremen_influence: int = 0
 
 
-class Location(BaseModel, ABC):
+class Location(BaseModel):
 
     name: str
     agent_icon: AgentIcon
     combat: bool = False
-    control: Control | None | None = None
-    cost: Cost = Cost()
+    control: Control | None = None
+    cost: Cost = Cost()  # TODO: set cost for the locations that have one.
     free: bool = True
 
-    @abstractmethod
     def pay(self, player_id: int) -> None:
-        # TODO This calls API to modify game state (player resources) or to say payment was not successful
-        pass
+        raise NotImplementedError("This method should be overridden in subclasses")
 
-    @abstractmethod
     def reward(self, player_id: int) -> None:
-        # TODO This calls API to modify game state (player resources, troop deployment, influence, aliance tokens, ...)
-        pass
+        raise NotImplementedError("This method should be overridden in subclasses")
 
 
 class SpiceLocation(Location):
@@ -40,13 +36,11 @@ class SpiceLocation(Location):
         if self.free:
             self.extra_spice += 1
 
-    @abstractmethod
     def pay(self, player_id: int) -> None:
-        pass
+        raise NotImplementedError("This method should be overridden in subclasses")
 
-    @abstractmethod
     def reward(self, player_id: int) -> None:
-        pass
+        raise NotImplementedError("This method should be overridden in subclasses")
 
 
 class Arrakeen(Location):

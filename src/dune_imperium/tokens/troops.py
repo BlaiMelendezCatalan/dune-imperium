@@ -2,7 +2,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class TroopState(Enum):
+class TroopState(int, Enum):
 
     SUPPLY = 1
     GARRISON = 2

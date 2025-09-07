@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class AgentIcon(Enum):
+class AgentIcon(int, Enum):
 
     EMPEROR = 1
     SPACING_GUILD = 2

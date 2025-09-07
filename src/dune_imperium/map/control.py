@@ -1,15 +1,10 @@
-from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 
-class Control(BaseModel, ABC):
+class Control(BaseModel):
 
     def add_troop(self) -> None:
         # Implement here
-        pass
-
-    @abstractmethod
-    def add_resource(self) -> None:
         pass
 
 

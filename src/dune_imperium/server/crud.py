@@ -1,3 +1,4 @@
+from asyncio import Lock
 from contextlib import asynccontextmanager
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -21,6 +22,8 @@ class Crud:
 
     @asynccontextmanager
     async def _get_session(self, lock_name: str) -> AsyncGenerator[AsyncSession, None]:
+        if lock_name not in self._lock:
+            self._lock[lock_name] = Lock()
         async with self._lock[lock_name]:
             engine = create_async_engine(
                 "sqlite+aiosqlite:///./test.db", echo=True
@@ -36,26 +39,27 @@ class Crud:
     @staticmethod
     def _to_sql(game: Game) -> GameSQL:
         return GameSQL(
-            id=game.id, name=game.name, state=game.model_dump_json()
+            game_id=game.id, name=game.name, state=game.model_dump()
         )  # TODO maybe add state to Game class?
 
     # async def list_games(self, user_name: str) -> None:
     #     async with self._get_session(lock_name="general") as session:
     #         ...
 
-    async def add_game(self, game: Game) -> None:
+    async def add_game(self, game: Game) -> Game:
         async with self._get_session(lock_name="general") as session:
             game_sql = self._to_sql(game)
             session.add(game_sql)
+            return game
 
     async def delete_game(self, game_id) -> None:
         async with self._get_session(lock_name=game_id) as session:
-            query = delete(GameSQL).where(GameSQL.name == game_id)
+            query = delete(GameSQL).where(GameSQL.game_id == game_id)
             await session.execute(query)
 
     async def get_game(self, game_id: str) -> Game:
         async with self._get_session(lock_name=game_id) as session:
-            query = select(GameSQL).where(GameSQL.name == game_id)
+            query = select(GameSQL).where(GameSQL.game_id == game_id)
             result = await session.execute(query)
             game_sql = result.scalar_one()
             return self._to_pydantic(game_sql)
@@ -64,7 +68,7 @@ class Crud:
         async with self._get_session(lock_name=game.name) as session:
             query = (
                 update(GameSQL)
-                .where(GameSQL.name == game.name)
+                .where(GameSQL.game_id == game.id)
                 .values(state=game.model_dump())
             )
             await session.execute(query)

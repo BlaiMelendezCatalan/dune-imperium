@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from random import shuffle
 
 
-class ConflictNumber(Enum):
+class ConflictNumber(str, Enum):
 
     ONE = "I"
     TWO = "II"

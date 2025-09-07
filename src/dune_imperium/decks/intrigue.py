@@ -3,7 +3,7 @@ from enum import Enum
 from dune_imperium.decks.base import BaseCard, BaseDeck
 
 
-class IntrigueType(Enum):
+class IntrigueType(str, Enum):
 
     PLOT = "plot"
     COMBAT = "combat"
