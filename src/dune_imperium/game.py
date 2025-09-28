@@ -2,12 +2,17 @@ import random
 from pydantic import BaseModel
 
 from dune_imperium.decks.conflicts import ConflictCard, ConflictDeck
-from dune_imperium.decks.imperium import ImperiumDeck, ImperiumExposedDeck
+from dune_imperium.decks.imperium import ImperiumDeck, ExposedImperiumDeck
 from dune_imperium.decks.intrigue import IntrigueDeck
 from dune_imperium.decks.reserve import (
     ArrakisLiaisonDeck,
     FoldSpaceDeck,
     TheSpiceMustFlowDeck,
+)
+from dune_imperium.decks.trash import (
+    TrashedBigCardDeck,
+    TrashedConflictDeck,
+    TrashedIntrigueDeck,
 )
 from dune_imperium.map.locations import Locations
 from dune_imperium.player import Player
@@ -39,10 +44,13 @@ class Game(BaseModel):
     map: Locations = Locations()
 
     imperium_deck: ImperiumDeck = ImperiumDeck()
-    imperium_exposed_deck: ImperiumExposedDeck = ImperiumExposedDeck()
+    exposed_imperium_deck: ExposedImperiumDeck = ExposedImperiumDeck()
+    trashed_big_card_deck: TrashedBigCardDeck = TrashedBigCardDeck()
     intrigue_deck: IntrigueDeck = IntrigueDeck()
+    trashed_intrigue_deck: TrashedIntrigueDeck = TrashedIntrigueDeck()
     conflict_deck: ConflictDeck = ConflictDeck()
     conflict_in_play: ConflictCard | None = None
+    trashed_conflict_deck: TrashedConflictDeck = TrashedConflictDeck()
     arrakis_liaison_deck: ArrakisLiaisonDeck = ArrakisLiaisonDeck()
     fold_space_deck: FoldSpaceDeck = FoldSpaceDeck()
     the_spice_must_flow_deck: TheSpiceMustFlowDeck = TheSpiceMustFlowDeck()
@@ -94,11 +102,11 @@ class Game(BaseModel):
         elif "the_spice_must_flow" in card_name:
             the_spice_must_flow_card = self.arrakis_liaison_deck.cards.pop(0)
             self.players[player_id].discard_pile.add(the_spice_must_flow_card)
-        elif imperium_card := self.imperium_exposed_deck.cards.get(card_name):
+        elif imperium_card := self.exposed_imperium_deck.cards.get(card_name):
             self.players[player_id].discard_pile.add(imperium_card)
         else:
             raise ValueError(f"No exposed card with name: {card_name}.")
 
     def expose_n_imperium_cards(self, n: int) -> None:
         imperium_cards = [self.imperium_deck.cards.pop(0) for _ in range(n)]
-        self.imperium_exposed_deck.add(imperium_cards)
+        self.exposed_imperium_deck.add(imperium_cards)

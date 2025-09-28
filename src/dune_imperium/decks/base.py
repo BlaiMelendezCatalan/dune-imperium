@@ -67,7 +67,7 @@ class BaseDeck(BaseModel, Generic[T_Card]):
             repetitions: int = subclass.model_fields["repetitions"].default
             for i in range(repetitions):
                 card = subclass()  # pyright: ignore[reportCallIssue]
-                self.add_repetition_to_card_name(card, i)
+                self._add_repetition_to_card_name(card, i)
                 self._cards.append(card)
         if shuffle_deck:
             shuffle(self._cards)
@@ -77,5 +77,5 @@ class BaseDeck(BaseModel, Generic[T_Card]):
         return self._cards
 
     @staticmethod
-    def add_repetition_to_card_name(card: BaseCard, repetition: int):
+    def _add_repetition_to_card_name(card: BaseCard, repetition: int):
         card.name += f"__{repetition}"

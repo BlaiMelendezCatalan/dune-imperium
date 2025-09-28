@@ -460,7 +460,7 @@ class ImperiumDeck(BaseDeck[ImperiumCard]):
         super().__init__(ImperiumCard, shuffle_deck=True, **data)
 
 
-class ImperiumExposedDeck(BaseModel):
+class ExposedImperiumDeck(BaseModel):
 
     cards: dict[str, ImperiumCard] = {}
 

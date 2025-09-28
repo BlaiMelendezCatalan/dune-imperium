@@ -19,6 +19,7 @@ class Player(BaseModel):
     resources: Resources = Resources()
 
     persuasion: int = 0
+    swords: int = 0
 
     agents: list[Agent] = [Agent() for _ in range(2)]
 
