@@ -7,17 +7,29 @@ from dune_imperium.server.dependencies import CrudDependency
 
 def make_routes() -> APIRouter:
 
-    router = APIRouter(prefix="/game", tags=["game"])
+    router = APIRouter(prefix="/games", tags=["game"])
 
-    @router.post("/{game_name}/new_game/")
-    async def new_game(game_name: str, crud: CrudDependency):
+    @router.post("/create_game/{game_name}")
+    async def create_game(game_name: str, crud: CrudDependency):
         game_id = str(uuid.uuid4())
         game = Game(id=game_id, name=game_name)
-        await crud.add_game(game)
+        await crud.create_game(game)
 
     @router.get("/{game_id}")
-    async def get_game(game_id: str, crud: CrudDependency):
-        return await crud.get_game(game_id)
+    async def read_game(game_id: str, crud: CrudDependency):
+        return await crud.read_game(game_id)
+
+    @router.get("/")
+    async def list_games(crud: CrudDependency):
+        return await crud.list_games()
+
+    @router.patch("/update_game")
+    async def update_game(crud: CrudDependency, game: Game):
+        return await crud.update_game(game)
+
+    @router.delete("/{game_id}")
+    async def delete_game(game_id: str, crud: CrudDependency):
+        return await crud.delete_game(game_id)
 
     # @router.post("/{game_id}/add_player/")
     # async def add_player(): ...

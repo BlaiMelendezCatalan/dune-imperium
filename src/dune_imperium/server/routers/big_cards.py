@@ -17,7 +17,7 @@ def make_routes() -> APIRouter:
     async def acquire(
         crud: CrudDependency, game_name: str, request: CardRequest
     ) -> None:
-        game = await crud.get_game(game_name)
+        game = await crud.read_game(game_name)
         game.acquire_exposed_card(
             **request.model_dump()
         )  # This should include reserve cards as well
@@ -37,7 +37,7 @@ def make_routes() -> APIRouter:
     ):
         # TODO create a context manager that gets game, checks player is current,
         # checks card has not been played, yields game, and updates game
-        game = await crud.get_game(game_name)
+        game = await crud.read_game(game_name)
         player = game.players[request.player_id]
         if player.id != game.current_player:
             # TODO tell the user "it is not your turn"

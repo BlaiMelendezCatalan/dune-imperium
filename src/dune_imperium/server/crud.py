@@ -42,33 +42,36 @@ class Crud:
             game_id=game.id, name=game.name, state=game.model_dump()
         )  # TODO maybe add state to Game class?
 
-    # async def list_games(self, user_name: str) -> None:
-    #     async with self._get_session(lock_name="general") as session:
-    #         ...
-
-    async def add_game(self, game: Game) -> Game:
+    async def create_game(self, game: Game) -> Game:
         async with self._get_session(lock_name="general") as session:
             game_sql = self._to_sql(game)
             session.add(game_sql)
             return game
 
-    async def delete_game(self, game_id) -> None:
-        async with self._get_session(lock_name=game_id) as session:
-            query = delete(GameSQL).where(GameSQL.game_id == game_id)
-            await session.execute(query)
-
-    async def get_game(self, game_id: str) -> Game:
+    async def read_game(self, game_id: str) -> Game:
         async with self._get_session(lock_name=game_id) as session:
             query = select(GameSQL).where(GameSQL.game_id == game_id)
             result = await session.execute(query)
             game_sql = result.scalar_one()
             return self._to_pydantic(game_sql)
 
+    async def list_games(self) -> list[str]:
+        async with self._get_session(lock_name="general") as session:
+            query = select(GameSQL)
+            result = await session.execute(query)
+            games_sql = result.scalars().all()
+            return [self._to_pydantic(game_sql).id for game_sql in games_sql]
+
     async def update_game(self, game: Game) -> None:
-        async with self._get_session(lock_name=game.name) as session:
+        async with self._get_session(lock_name=game.id) as session:
             query = (
                 update(GameSQL)
                 .where(GameSQL.game_id == game.id)
                 .values(state=game.model_dump())
             )
+            await session.execute(query)
+
+    async def delete_game(self, game_id) -> None:
+        async with self._get_session(lock_name=game_id) as session:
+            query = delete(GameSQL).where(GameSQL.game_id == game_id)
             await session.execute(query)
