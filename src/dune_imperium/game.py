@@ -1,6 +1,7 @@
 import random
 from pydantic import BaseModel
 
+from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.decks.conflicts import ConflictCard, ConflictDeck
 from dune_imperium.decks.imperium import ImperiumDeck, ExposedImperiumDeck
 from dune_imperium.decks.intrigue import IntrigueDeck
@@ -55,17 +56,11 @@ class Game(BaseModel):
     fold_space_deck: FoldSpaceDeck = FoldSpaceDeck()
     the_spice_must_flow_deck: TheSpiceMustFlowDeck = TheSpiceMustFlowDeck()
 
-    def setup(self) -> None:
-        # Expose first 5 imperium cards
-        self.expose_n_imperium_cards(n=5)
-        # Set first player as current player
-        self.current_player = self.first_player
-
     def round_start(self) -> None:
         # A new conflict card is exposed
         self.conflict_in_play = self.conflict_deck.cards.pop(0)
         # Players draw 5 cards
-        [player.hand.draw() for player in list(self.players.values())]
+        # [player.hand.draw() for player in list(self.players.values())]
 
     def player_turns(self) -> None: ...
 
@@ -92,21 +87,12 @@ class Game(BaseModel):
         self.current_player = self.first_player
         self.round += 1
 
-    def acquire_exposed_card(self, player_id: int, card_name: str) -> None:
+    def pop_exposed_card(self, card_name: str) -> BaseBigCard:
         if "arrakis_liaison" in card_name:
-            arrakis_liaison_card = self.arrakis_liaison_deck.cards.pop(0)
-            self.players[player_id].discard_pile.add(arrakis_liaison_card)
+            return self.arrakis_liaison_deck.pop()
         elif "fold_space" in card_name:
-            fold_space_card = self.arrakis_liaison_deck.cards.pop(0)
-            self.players[player_id].discard_pile.add(fold_space_card)
+            return self.fold_space_deck.pop()
         elif "the_spice_must_flow" in card_name:
-            the_spice_must_flow_card = self.arrakis_liaison_deck.cards.pop(0)
-            self.players[player_id].discard_pile.add(the_spice_must_flow_card)
-        elif imperium_card := self.exposed_imperium_deck.cards.get(card_name):
-            self.players[player_id].discard_pile.add(imperium_card)
+            return self.the_spice_must_flow_deck.pop()
         else:
-            raise ValueError(f"No exposed card with name: {card_name}.")
-
-    def expose_n_imperium_cards(self, n: int) -> None:
-        imperium_cards = [self.imperium_deck.cards.pop(0) for _ in range(n)]
-        self.exposed_imperium_deck.add(imperium_cards)
+            return self.exposed_imperium_deck.pop(card_name)

@@ -14,64 +14,50 @@ class Deck(BaseModel):
     def __init__(self, **data) -> None:
         super().__init__(**data)
         initial_deck = InitialDeck()
-        self.cards = cast(list[BaseBigCard], initial_deck.cards)
+        self.cards = cast(list[BaseBigCard], initial_deck.get_cards())
 
     def rebuild(self, cards: list[BaseBigCard]) -> None:
         shuffle(cards)
         self.cards = cards
 
 
-class Hand(BaseModel):
+class PlayerDeck(BaseModel):
 
-    cards: dict[str, BaseBigCard] = {}
+    card_dict: dict[str, BaseBigCard] = {}
 
-    def draw(self, *cards: BaseBigCard) -> None:
-        self._cards = {card.name: card for card in cards}
+    def add(self, card: BaseBigCard) -> None:
+        self.card_dict.update({card.name: card})
 
-    def play_as_agent(self, card_name: str, player_id: int) -> None:
-        self._cards[card_name].agent_reward(player_id)
+    def pop(self, card_name: str) -> BaseBigCard:
+        return self.card_dict.pop(card_name)
 
-    def reveal(self, player_id: int) -> None:
-        [card.revelation_reward(player_id) for card in self._cards.values()]
-
-    def trash(self, card_name: str) -> None:
-        self._cards[card_name].trash()
+    @property
+    def cards(self) -> list[BaseBigCard]:
+        return list(self.card_dict.values())
 
 
-class InPlay(BaseModel):
-
-    cards: dict[str, BaseBigCard] = {}
-
-    def add(self, card: BaseBigCard):
-        # TODO
-        ...
-
-    def discard(self) -> None:
-        # TODO
-        ...
-
-    def trash(self) -> None:
-        # TODO
-        ...
+class Hand(PlayerDeck): ...
 
 
-class DiscardPile(BaseModel):
-
-    cards: dict[str, BaseBigCard] = {}
-
-    def add(self, card: BaseBigCard):
-        # TODO
-        ...
-
-    def trash(self, card: BaseBigCard) -> None:
-        # TODO
-        ...
+class InPlay(PlayerDeck): ...
 
 
-class Intrigues(BaseModel):
+class DiscardPile(PlayerDeck): ...
 
-    cards: dict[str, IntrigueCard] = {}
 
-    def add(self, card: BaseBigCard):
-        # TODO
-        ...
+class PlayerIntrigueDeck(BaseModel):
+
+    intrigue_dict: dict[str, IntrigueCard] = {}
+
+    def add(self, card: IntrigueCard) -> None:
+        self.intrigue_dict.update({card.name: card})
+
+    def pop(self, card_name: str) -> IntrigueCard:
+        return self.intrigue_dict.pop(card_name)
+
+    @property
+    def intrigues(self) -> list[IntrigueCard]:
+        return list(self.intrigue_dict.values())
+
+
+class Intrigues(PlayerIntrigueDeck): ...

@@ -9,7 +9,7 @@ def make_routes() -> APIRouter:
 
     router = APIRouter(prefix="/games", tags=["game"])
 
-    @router.post("/create_game/{game_name}")
+    @router.post("/{game_name}/create_game")
     async def create_game(game_name: str, crud: CrudDependency):
         game_id = str(uuid.uuid4())
         game = Game(id=game_id, name=game_name)
@@ -30,6 +30,18 @@ def make_routes() -> APIRouter:
     @router.delete("/{game_id}")
     async def delete_game(game_id: str, crud: CrudDependency):
         return await crud.delete_game(game_id)
+
+    @router.post("/{game_id}/setup_game")
+    async def setup_game(game_id: str, crud: CrudDependency):
+        game = await crud.read_game(game_id)
+        # Expose first 5 imperium cards
+        for _ in range(5):
+            card = game.imperium_deck.pop()
+            print(card.name)
+            game.exposed_imperium_deck.add(card)
+        # Set first player as current player
+        game.current_player = game.first_player
+        await crud.update_game(game)
 
     # @router.post("/{game_id}/add_player/")
     # async def add_player(): ...

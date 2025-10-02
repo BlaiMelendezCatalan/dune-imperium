@@ -18,9 +18,27 @@ def make_routes() -> APIRouter:
     ) -> None:
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        card = game.exposed_imperium_deck.pop(card_name)
+        card = game.pop_exposed_card(card_name)
         player.discard_pile.add(card)
-        game.expose_n_imperium_cards(n=1)  # TODO: See if this is convenient
+        card = game.imperium_deck.pop()
+        game.exposed_imperium_deck.add(card)
+        await crud.update_game(game)
+
+    @router.post("/play_card/{card_name}")
+    async def play_card(card_name: str, crud: CrudDependency, request: Request):
+        game = await crud.read_game(request.game_id)
+        player = game.players[request.player_id]
+        card = player.hand.pop(card_name)
+        player.in_play.add(card)
+        card.agent_reward(player)
+        await crud.update_game(game)
+
+    @router.post("/reveal_hand")
+    async def reveal_hand(crud: CrudDependency, request: Request):
+        game = await crud.read_game(request.game_id)
+        player = game.players[request.player_id]
+        for card in player.hand.cards:
+            card.revelation_reward(player)
         await crud.update_game(game)
 
     @router.post("/trash_card/{card_name}/{source}")
@@ -29,29 +47,16 @@ def make_routes() -> APIRouter:
     ) -> None:
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
+        # TODO reserve cards return to their decks when trashed
         if source == "hand":
-            card = player.hand.cards.pop(card_name)
+            card = player.hand.pop(card_name)
         elif source == "in_play":
-            card = player.in_play.cards.pop(card_name)
+            card = player.in_play.pop(card_name)
         elif source == "discard_pile":
-            card = player.discard_pile.cards.pop(card_name)
+            card = player.discard_pile.pop(card_name)
         else:
             raise ValueError(f"You cannot trash cards from {source}.")
         game.trashed_big_card_deck.add([card])
-        await crud.update_game(game)
-
-    @router.post("/play_card/{card_name}/{play_type}")
-    async def play_card(
-        card_name: str, play_type: str, crud: CrudDependency, request: Request
-    ):
-        game = await crud.read_game(request.game_id)
-        player = game.players[request.player_id]
-        card = player.hand.cards.pop(card_name)
-        player.in_play.add(card)
-        if play_type == "agent":
-            card.agent_reward(player.id)
-        elif play_type == "revelation":
-            card.revelation_reward(player.id)
         await crud.update_game(game)
 
     # @router.post("/{game_id}/arrakis_recruiter/agent_reward")

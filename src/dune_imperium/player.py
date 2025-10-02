@@ -35,6 +35,3 @@ class Player(BaseModel):
     in_play: InPlay = InPlay()
     discard_pile: DiscardPile = DiscardPile()
     intrigues: Intrigues = Intrigues()
-
-    def reveal(self):
-        self.hand.reveal(self.id)

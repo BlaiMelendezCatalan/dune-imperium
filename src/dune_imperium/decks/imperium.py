@@ -63,19 +63,11 @@ class Chani(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
-    def acquire(self, player_id: int) -> None:
-        super().acquire(player_id)
-        # TODO Add extra logic
-
 
 class ChoamDirectorship(ImperiumCard):
 
     name: str = "choam_directorship"
     persuasion_cost: int = 8
-
-    def acquire(self, player_id: int) -> None:
-        super().acquire(player_id)
-        # TODO Add extra logic
 
 
 class Crysknife(ImperiumCard):
@@ -195,9 +187,6 @@ class KwisatzHaderach(ImperiumCard):
     persuasion_cost: int = 8
     agent_icons: list[AgentIcon] = []
 
-    def revelation_reward(self, player_id: int) -> None:
-        pass
-
 
 class LadyJessica(ImperiumCard):
 
@@ -211,12 +200,6 @@ class LadyJessica(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
-    def acquire(self, player_id: int) -> None:
-        super().acquire(player_id)
-        # TODO Add extra logic
-
-    def agent_reward(self, player_id: int): ...
-
 
 class LietKynes(ImperiumCard):
 
@@ -224,12 +207,6 @@ class LietKynes(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR, Faction.FREMEN]
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.CITY]
-
-    def acquire(self, player_id: int) -> None:
-        super().acquire(player_id)
-        # TODO Add extra logic
-
-    def agent_reward(self, player_id: int): ...
 
 
 class MissionariaProtectiva(ImperiumCard):
@@ -240,8 +217,6 @@ class MissionariaProtectiva(ImperiumCard):
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
-    def agent_reward(self, player_id: int): ...
-
 
 class Opulence(ImperiumCard):
 
@@ -249,8 +224,6 @@ class Opulence(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR]
     persuasion_cost: int = 6
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class OtherMemory(ImperiumCard):
@@ -260,16 +233,12 @@ class OtherMemory(ImperiumCard):
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
-    def agent_reward(self, player_id: int): ...
-
 
 class PiterDeVries(ImperiumCard):
 
     name: str = "piter_de_vries"
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class PowerPlay(ImperiumCard):
@@ -284,11 +253,6 @@ class PowerPlay(ImperiumCard):
         AgentIcon.FREMEN,
     ]
 
-    def agent_reward(self, player_id: int): ...
-
-    def revelation_reward(self, player_id: int) -> None:
-        pass
-
 
 class ReverendMotherMohiam(ImperiumCard):
 
@@ -296,8 +260,6 @@ class ReverendMotherMohiam(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR, Faction.BENE_GESSERIT]
     persuasion_cost: int = 6
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.BENE_GESSERIT]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class SardaukarInfantry(ImperiumCard):
@@ -308,8 +270,6 @@ class SardaukarInfantry(ImperiumCard):
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = []
 
-    def agent_reward(self, player_id: int): ...
-
 
 class SardaukarLegion(ImperiumCard):
 
@@ -319,8 +279,6 @@ class SardaukarLegion(ImperiumCard):
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.LANDSRAAT]
 
-    def agent_reward(self, player_id: int): ...
-
 
 class Scout(ImperiumCard):
 
@@ -328,8 +286,6 @@ class Scout(ImperiumCard):
     repetitions: int = 2
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class ShiftingAllegiances(ImperiumCard):
@@ -339,8 +295,6 @@ class ShiftingAllegiances(ImperiumCard):
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.SPICE_TRADE]
 
-    def agent_reward(self, player_id: int): ...
-
 
 class SietchReverendMother(ImperiumCard):
 
@@ -348,8 +302,6 @@ class SietchReverendMother(ImperiumCard):
     factions: list[Faction] = [Faction.BENE_GESSERIT, Faction.FREMEN]
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.BENE_GESSERIT, AgentIcon.FREMEN]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class SmugglersThopter(ImperiumCard):
@@ -360,8 +312,6 @@ class SmugglersThopter(ImperiumCard):
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
-    def agent_reward(self, player_id: int): ...
-
 
 class SpaceTravel(ImperiumCard):
 
@@ -370,8 +320,6 @@ class SpaceTravel(ImperiumCard):
     factions: list[Faction] = [Faction.SPACING_GUILD]
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.SPACING_GUILD]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class SpiceHunter(ImperiumCard):
@@ -382,8 +330,6 @@ class SpiceHunter(ImperiumCard):
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.SPICE_TRADE]
 
-    def agent_reward(self, player_id: int): ...
-
 
 class SpiceSmugglers(ImperiumCard):
 
@@ -392,8 +338,6 @@ class SpiceSmugglers(ImperiumCard):
     factions: list[Faction] = [Faction.SPACING_GUILD]
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class Stilgar(ImperiumCard):
@@ -406,8 +350,6 @@ class Stilgar(ImperiumCard):
         AgentIcon.CITY,
         AgentIcon.SPICE_TRADE,
     ]
-
-    def agent_reward(self, player_id: int): ...
 
 
 class TesteOfHumanity(ImperiumCard):
@@ -464,8 +406,8 @@ class ExposedImperiumDeck(BaseModel):
 
     cards: dict[str, ImperiumCard] = {}
 
-    def add(self, cards: list[ImperiumCard]):
-        self.cards.update({card.name: card for card in cards})
+    def add(self, card: ImperiumCard):
+        self.cards.update({card.name: card})
 
     def pop(self, card_name: str) -> ImperiumCard:
-        return self.cards[card_name]
+        return self.cards.pop(card_name)

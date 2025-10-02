@@ -1,5 +1,9 @@
+from typing import TYPE_CHECKING, cast
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.agent_icons.icons import AgentIcon
+
+if TYPE_CHECKING:
+    from dune_imperium.player import Player
 
 
 class InitialCard(BaseBigCard): ...
@@ -9,6 +13,9 @@ class ConvincingArgument(InitialCard):
 
     name: str = "convincing_argument"
     repetitions: int = 2
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
 
 
 class Dagger(InitialCard):
@@ -67,3 +74,6 @@ class InitialDeck(BaseDeck[InitialCard]):
 
     def __init__(self, **data) -> None:
         super().__init__(InitialCard, shuffle_deck=True, **data)
+
+    def get_cards(self) -> list[BaseBigCard]:
+        return cast(list[BaseBigCard], self.cards)

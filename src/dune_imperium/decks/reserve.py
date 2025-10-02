@@ -22,11 +22,6 @@ class FoldSpace(ReserveCard):
     persuasion_cost: int = 0
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
 
-    def acquire(self, player_id: int) -> None:
-        super().acquire(player_id)
-        # TODO Add special extra logic
-        ...
-
 
 class TheSpiceMustFlow(ReserveCard):
 
@@ -34,10 +29,6 @@ class TheSpiceMustFlow(ReserveCard):
     repetitions: int = 10
     persuasion_cost: int = 9
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
-
-    def acquire(self, player_id: int) -> None:
-        super().acquire(player_id)
-        # TODO Add extra logic
 
 
 class ArrakisLiaisonDeck(BaseDeck[ArrakisLiaison]):
