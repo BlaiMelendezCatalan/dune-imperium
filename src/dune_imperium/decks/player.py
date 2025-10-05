@@ -11,8 +11,7 @@ class SourceDeck(BaseModel):
 
     cards: list[BaseBigCard] = []
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def initialize(self) -> None:
         initial_deck = InitialDeck()
         self.cards = cast(list[BaseBigCard], initial_deck.get_cards())
 
