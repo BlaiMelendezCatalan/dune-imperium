@@ -52,8 +52,7 @@ class Crud:
             query = select(GameSQL).where(GameSQL.game_id == game_id)
             result = await session.execute(query)
             game_sql = result.scalar_one()
-            game = self._to_pydantic(game_sql)
-            return game
+            return self._to_pydantic(game_sql)
 
     async def list_games(self) -> list[str]:
         async with self._get_session(lock_name="general") as session:
