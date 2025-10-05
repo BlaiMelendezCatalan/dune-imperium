@@ -11,9 +11,10 @@ def make_routes() -> APIRouter:
 
     @router.post("/{game_name}/create_game")
     async def create_game(game_name: str, crud: CrudDependency):
-        game_id = str(uuid.uuid4())
+        game_id = str(uuid.uuid4()).replace("-", "")
         game = Game(id=game_id, name=game_name)
         await crud.create_game(game)
+        return game_id
 
     @router.get("/{game_id}")
     async def read_game(game_id: str, crud: CrudDependency):

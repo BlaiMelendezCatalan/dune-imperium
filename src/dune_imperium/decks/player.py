@@ -7,7 +7,7 @@ from dune_imperium.decks.initial import InitialDeck
 from dune_imperium.decks.intrigue import IntrigueCard
 
 
-class Deck(BaseModel):
+class SourceDeck(BaseModel):
 
     cards: list[BaseBigCard] = []
 
@@ -20,6 +20,9 @@ class Deck(BaseModel):
         shuffle(cards)
         self.cards = cards
 
+    def pop(self) -> BaseBigCard:
+        return self.cards.pop()
+
 
 class PlayerDeck(BaseModel):
 
@@ -28,7 +31,11 @@ class PlayerDeck(BaseModel):
     def add(self, card: BaseBigCard) -> None:
         self.card_dict.update({card.name: card})
 
-    def pop(self, card_name: str) -> BaseBigCard:
+    def pop(self, card_name: str | None = None) -> BaseBigCard:
+        if card_name is None:
+            card = self.cards.pop()
+            self.card_dict.pop(card.name)
+            return card
         return self.card_dict.pop(card_name)
 
     @property
@@ -45,7 +52,7 @@ class InPlay(PlayerDeck): ...
 class DiscardPile(PlayerDeck): ...
 
 
-class PlayerIntrigueDeck(BaseModel):
+class Intrigues(BaseModel):
 
     intrigue_dict: dict[str, IntrigueCard] = {}
 
@@ -58,6 +65,3 @@ class PlayerIntrigueDeck(BaseModel):
     @property
     def intrigues(self) -> list[IntrigueCard]:
         return list(self.intrigue_dict.values())
-
-
-class Intrigues(PlayerIntrigueDeck): ...

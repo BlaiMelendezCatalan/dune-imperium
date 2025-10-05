@@ -42,11 +42,10 @@ class Crud:
             game_id=game.id, name=game.name, state=game.model_dump()
         )  # TODO maybe add state to Game class?
 
-    async def create_game(self, game: Game) -> Game:
+    async def create_game(self, game: Game) -> None:
         async with self._get_session(lock_name="general") as session:
             game_sql = self._to_sql(game)
             session.add(game_sql)
-            return game
 
     async def read_game(self, game_id: str) -> Game:
         async with self._get_session(lock_name=game_id) as session:

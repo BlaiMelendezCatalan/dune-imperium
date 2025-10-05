@@ -6,11 +6,28 @@ from dune_imperium.server.dependencies import CrudDependency
 
 def make_routes() -> APIRouter:
 
-    router = APIRouter(prefix="/cards", tags=["imperium_cards"])
+    router = APIRouter(prefix="/player", tags=["imperium_cards"])
 
     class Request(BaseModel):
         game_id: str
         player_id: int
+
+    @router.post("/draw_cards/{num_cards}")
+    async def draw_cards(
+        num_cards: int, crud: CrudDependency, request: Request
+    ) -> None:
+        game = await crud.read_game(request.game_id)
+        player = game.players[request.player_id]
+        drawn_cards = 0
+        try:
+            for _ in range(num_cards):
+                player.hand.add(player.source_deck.pop())
+                drawn_cards += 1
+        except IndexError:
+            player.source_deck.rebuild(player.discard_pile.cards)
+            for _ in range(num_cards - drawn_cards):
+                player.hand.add(player.source_deck.pop())
+        await crud.update_game(game)
 
     @router.post("/acquire_card/{card_name}")
     async def acquire_card(
@@ -18,10 +35,8 @@ def make_routes() -> APIRouter:
     ) -> None:
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        card = game.pop_exposed_card(card_name)
-        player.discard_pile.add(card)
-        card = game.imperium_deck.pop()
-        game.exposed_imperium_deck.add(card)
+        player.discard_pile.add(game.pop_exposed_card(card_name))
+        game.exposed_imperium_deck.add(game.imperium_deck.pop())
         await crud.update_game(game)
 
     @router.post("/play_card/{card_name}")
@@ -37,8 +52,12 @@ def make_routes() -> APIRouter:
     async def reveal_hand(crud: CrudDependency, request: Request):
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        for card in player.hand.cards:
+        while player.hand.cards:
+            card = player.hand.pop()
             card.revelation_reward(player)
+            player.in_play.add(card)
+        while player.in_play.cards:
+            player.discard_pile.add(player.in_play.pop())
         await crud.update_game(game)
 
     @router.post("/trash_card/{card_name}/{source}")
