@@ -25,6 +25,7 @@ def make_routes() -> APIRouter:
                 drawn_cards += 1
         except IndexError:
             player.source_deck.rebuild(player.discard_pile.cards)
+            player.discard_pile.card_dict = {}
             for _ in range(num_cards - drawn_cards):
                 player.hand.add(player.source_deck.pop())
         await crud.update_game(game)
@@ -54,6 +55,7 @@ def make_routes() -> APIRouter:
         player = game.players[request.player_id]
         while player.hand.cards:
             card = player.hand.pop()
+            print(f"Revealed card: {card.name}")
             card.revelation_reward(player)
             player.in_play.add(card)
         while player.in_play.cards:

@@ -15,7 +15,9 @@ class ConvincingArgument(InitialCard):
     repetitions: int = 2
 
     def revelation_reward(self, player: "Player") -> None:
+        print(f"****{player.persuasion=}****")
         player.persuasion += 1
+        print(f"****{player.persuasion=}****")
 
 
 class Dagger(InitialCard):
