@@ -1,3 +1,4 @@
+from typing import Self
 from pydantic import BaseModel
 
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
@@ -398,8 +399,9 @@ class WormRiders(ImperiumCard):
 
 class ImperiumDeck(BaseDeck[ImperiumCard]):
 
-    def __init__(self, **data) -> None:
-        super().__init__(ImperiumCard, shuffle_deck=True, **data)
+    def initialize(self) -> Self:
+        super()._initialize(ImperiumCard)
+        return self
 
 
 class ExposedImperiumDeck(BaseModel):

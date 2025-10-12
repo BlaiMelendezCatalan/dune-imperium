@@ -1,3 +1,4 @@
+from typing import Self
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.decks.factions import Faction
 from dune_imperium.agent_icons.icons import AgentIcon
@@ -33,17 +34,20 @@ class TheSpiceMustFlow(ReserveCard):
 
 class ArrakisLiaisonDeck(BaseDeck[ArrakisLiaison]):
 
-    def __init__(self, **data) -> None:
-        super().__init__(ArrakisLiaison, shuffle_deck=False, **data)
+    def initialize(self) -> Self:
+        super()._initialize(ArrakisLiaison)
+        return self
 
 
 class FoldSpaceDeck(BaseDeck[FoldSpace]):
 
-    def __init__(self, **data) -> None:
-        super().__init__(FoldSpace, shuffle_deck=False, **data)
+    def initialize(self) -> Self:
+        super()._initialize(FoldSpace)
+        return self
 
 
 class TheSpiceMustFlowDeck(BaseDeck[TheSpiceMustFlow]):
 
-    def __init__(self, **data) -> None:
-        super().__init__(TheSpiceMustFlow, shuffle_deck=False, **data)
+    def initialize(self) -> Self:
+        super()._initialize(TheSpiceMustFlow)
+        return self

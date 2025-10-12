@@ -1,3 +1,4 @@
+from random import shuffle
 from pydantic import BaseModel
 
 
@@ -58,9 +59,9 @@ class LeaderDeck(BaseModel):
 
     leaders: list[Leader] = []
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def initialize(self) -> None:
         self.leaders = [
             subclass()  # pyright: ignore[reportCallIssue]
             for subclass in Leader.__subclasses__()
         ]
+        shuffle(self.leaders)

@@ -17,8 +17,6 @@ def make_routes() -> APIRouter:
         [game.exposed_imperium_deck.add(game.imperium_deck.pop()) for _ in range(5)]
         # Set first player as current player
         game.current_player = game.first_player
-        # Initialize players' source deck
-        [player.source_deck.initialize() for player in game.players.values()]
         await crud.create_game(game)
         return game_id
 

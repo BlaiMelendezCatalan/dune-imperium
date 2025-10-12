@@ -1,6 +1,6 @@
 from random import shuffle
 from pydantic import BaseModel
-from typing import cast
+from typing import Self, cast
 
 from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.decks.initial import InitialDeck
@@ -11,9 +11,10 @@ class SourceDeck(BaseModel):
 
     cards: list[BaseBigCard] = []
 
-    def initialize(self) -> None:
-        initial_deck = InitialDeck()
-        self.cards = cast(list[BaseBigCard], initial_deck.get_cards())
+    def initialize(self) -> Self:
+        initial_deck = InitialDeck().initialize()
+        self.cards = cast(list[BaseBigCard], initial_deck.cards)
+        return self
 
     def rebuild(self, cards: list[BaseBigCard]) -> None:
         shuffle(cards)

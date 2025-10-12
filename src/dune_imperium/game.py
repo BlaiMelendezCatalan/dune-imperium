@@ -44,17 +44,17 @@ class Game(BaseModel):
 
     map: Locations = Locations()
 
-    imperium_deck: ImperiumDeck = ImperiumDeck()
+    imperium_deck: ImperiumDeck = ImperiumDeck().initialize()
     exposed_imperium_deck: ExposedImperiumDeck = ExposedImperiumDeck()
     trashed_big_card_deck: TrashedBigCardDeck = TrashedBigCardDeck()
-    intrigue_deck: IntrigueDeck = IntrigueDeck()
+    intrigue_deck: IntrigueDeck = IntrigueDeck().initialize()
     trashed_intrigue_deck: TrashedIntrigueDeck = TrashedIntrigueDeck()
-    conflict_deck: ConflictDeck = ConflictDeck()
+    conflict_deck: ConflictDeck = ConflictDeck().initialize()
     conflict_in_play: ConflictCard | None = None
     trashed_conflict_deck: TrashedConflictDeck = TrashedConflictDeck()
-    arrakis_liaison_deck: ArrakisLiaisonDeck = ArrakisLiaisonDeck()
-    fold_space_deck: FoldSpaceDeck = FoldSpaceDeck()
-    the_spice_must_flow_deck: TheSpiceMustFlowDeck = TheSpiceMustFlowDeck()
+    arrakis_liaison_deck: ArrakisLiaisonDeck = ArrakisLiaisonDeck().initialize()
+    fold_space_deck: FoldSpaceDeck = FoldSpaceDeck().initialize()
+    the_spice_must_flow_deck: TheSpiceMustFlowDeck = TheSpiceMustFlowDeck().initialize()
 
     def round_start(self) -> None:
         # A new conflict card is exposed

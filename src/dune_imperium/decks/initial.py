@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Self
 from dune_imperium.decks.base import BaseBigCard, BaseDeck
 from dune_imperium.agent_icons.icons import AgentIcon
 
@@ -74,8 +74,6 @@ class SeekAllies(InitialCard):
 
 class InitialDeck(BaseDeck[InitialCard]):
 
-    def __init__(self, **data) -> None:
-        super().__init__(InitialCard, shuffle_deck=True, **data)
-
-    def get_cards(self) -> list[BaseBigCard]:
-        return cast(list[BaseBigCard], self.cards)
+    def initialize(self) -> Self:
+        super()._initialize(InitialCard)
+        return self

@@ -25,7 +25,7 @@ class BaseBigCard(BaseCard):
         pass
 
     def revelation_reward(self, player: "Player") -> None:
-        pass
+        print("********")
 
 
 T_Card = TypeVar("T_Card", bound=BaseCard)
@@ -35,18 +35,17 @@ class BaseDeck(BaseModel, Generic[T_Card]):
 
     cards: list[T_Card] = []
 
-    def __init__(self, card_class: type[T_Card], shuffle_deck: bool, **data) -> None:
-        super().__init__(**data)
+    def _initialize(self, card_class: type[T_Card]) -> None:
         for (
             subclass
         ) in card_class.__subclasses__():  # pyright: ignore[reportAttributeAccessIssue]
+            print(f"Adding {subclass.__name__}")
             repetitions: int = subclass.model_fields["repetitions"].default
             for i in range(repetitions):
                 card = subclass()  # pyright: ignore[reportCallIssue]
                 self._add_repetition_to_card_name(card, i)
                 self.cards.append(card)
-        if shuffle_deck:
-            shuffle(self.cards)
+        shuffle(self.cards)
 
     @staticmethod
     def _add_repetition_to_card_name(card: BaseCard, repetition: int):

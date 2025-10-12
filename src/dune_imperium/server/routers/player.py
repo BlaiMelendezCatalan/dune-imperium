@@ -55,7 +55,7 @@ def make_routes() -> APIRouter:
         player = game.players[request.player_id]
         while player.hand.cards:
             card = player.hand.pop()
-            print(f"Revealed card: {card.name}")
+            print(f"Revealed card: {card.name} ({type(card)})")
             card.revelation_reward(player)
             player.in_play.add(card)
         while player.in_play.cards:

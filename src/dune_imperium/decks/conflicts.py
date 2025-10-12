@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Self
 from pydantic import BaseModel
 from random import shuffle
 
@@ -137,8 +138,7 @@ class ConflictDeck(BaseModel):
 
     cards: list[ConflictCard] = []
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def initialize(self) -> Self:
         cards_dict: dict[ConflictNumber, list[ConflictCard]] = {
             ConflictNumber.ONE: [],
             ConflictNumber.TWO: [],
@@ -153,6 +153,11 @@ class ConflictDeck(BaseModel):
         shuffle(cards_dict[ConflictNumber.TWO])
         shuffle(cards_dict[ConflictNumber.THREE])
 
-        self.cards = [card for card in cards_dict[ConflictNumber.ONE][:1]]
+        self.cards = [card for card in cards_dict[ConflictNumber.THREE]]
         self.cards += [card for card in cards_dict[ConflictNumber.TWO][:5]]
-        self.cards += [card for card in cards_dict[ConflictNumber.THREE]]
+        self.cards += [card for card in cards_dict[ConflictNumber.ONE][:1]]
+
+        return self
+
+    def pop(self) -> ConflictCard:
+        return self.cards.pop()

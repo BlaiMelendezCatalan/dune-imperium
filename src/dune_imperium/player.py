@@ -30,7 +30,7 @@ class Player(BaseModel):
     spacing_guild_influence: InfluenceTracker = InfluenceTracker()
     emperor_influence: InfluenceTracker = InfluenceTracker()
 
-    source_deck: SourceDeck = SourceDeck()
+    source_deck: SourceDeck = SourceDeck().initialize()
     hand: Hand = Hand()
     in_play: InPlay = InPlay()
     discard_pile: DiscardPile = DiscardPile()

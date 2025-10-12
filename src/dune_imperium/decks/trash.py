@@ -14,9 +14,6 @@ class BaseTrashDeck(BaseModel, Generic[T_Card]):
 
     cards: list[T_Card] = []
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
-
     def add(self, cards: list[T_Card]) -> None:
         self.cards.extend(cards)
 

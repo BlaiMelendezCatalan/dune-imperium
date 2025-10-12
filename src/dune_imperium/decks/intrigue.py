@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Self
 
 from dune_imperium.decks.base import BaseCard, BaseDeck
 
@@ -230,5 +231,6 @@ class Windfall(IntrigueCard):
 
 class IntrigueDeck(BaseDeck[IntrigueCard]):
 
-    def __init__(self, **data) -> None:
-        super().__init__(IntrigueCard, shuffle_deck=True, **data)
+    def initialize(self) -> Self:
+        super()._initialize(IntrigueCard)
+        return self
