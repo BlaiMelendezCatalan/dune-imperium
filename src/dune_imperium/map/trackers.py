@@ -1,17 +1,22 @@
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from dune_imperium.player import Player
+
+
+MAX_INFLUENCE = 6
 
 
 class InfluenceTracker(BaseModel):
 
     influence: int = 0
-    max_influence: int = 6
 
-    def increase_influence(self, player_id: int) -> None:
-        # TODO call API with influence tracker name to increase the influence and manage all logic implied:
-        # rewards, influence points, aliance markers.
+    def increase_influence(self, player: "Player") -> None:
+        # TODO
         pass
 
-    def decrease_influence(self, player_id: int) -> None:
-        # TODO call API with influence tracker name to decrease the influence and manage all logic implied
-        # rewards, influence points, aliance markers.
+    def decrease_influence(self, player: "Player") -> None:
+        # TODO
         pass

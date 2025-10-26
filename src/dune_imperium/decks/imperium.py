@@ -1,10 +1,13 @@
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from pydantic import BaseModel
 
 from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
 from dune_imperium.decks.factions import Faction
+
+if TYPE_CHECKING:
+    from dune_imperium.player import Player
 
 
 class ImperiumCard(BaseBigCard): ...
@@ -17,12 +20,20 @@ class ArrakisRecruiter(ImperiumCard):
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.swords += 1
+
 
 class AssassinationMission(ImperiumCard):
 
     name: str = "assassination_mission"
     repetitions: int = 2
     persuasion_cost: int = 1
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.resources.solari += 1
+        player.swords += 1
 
 
 class BeneGesseritInitiate(ImperiumCard):
@@ -37,6 +48,9 @@ class BeneGesseritInitiate(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+
 
 class BeneGesseritSister(ImperiumCard):
 
@@ -46,12 +60,20 @@ class BeneGesseritSister(ImperiumCard):
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.BENE_GESSERIT, AgentIcon.LANDSRAAT]
 
+    def revelation_reward(self, player: "Player") -> None:
+        # TODO 2 persuasion or 2 swords -> requires player choice
+        ...
+
 
 class Carryall(ImperiumCard):
 
     name: str = "carryall"
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.resources.spice += 1
 
 
 class Chani(ImperiumCard):
@@ -65,11 +87,18 @@ class Chani(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+        # TODO retreat any number of troops from a battle -> requires player choice
+
 
 class ChoamDirectorship(ImperiumCard):
 
     name: str = "choam_directorship"
     persuasion_cost: int = 8
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.resources.solari += 3
 
 
 class Crysknife(ImperiumCard):
@@ -79,6 +108,10 @@ class Crysknife(ImperiumCard):
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.swords += 1
+        # TODO fremen bond
+
 
 class DoctorYueh(ImperiumCard):
 
@@ -86,12 +119,19 @@ class DoctorYueh(ImperiumCard):
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+
 
 class DuncanIdaho(ImperiumCard):
 
     name: str = "duncan_idaho"
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.swords += 2
+        player.resources.water += 1
 
 
 class FedaykinDeathCommando(ImperiumCard):
@@ -102,6 +142,10 @@ class FedaykinDeathCommando(ImperiumCard):
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        # TODO fremen bond
+
 
 class FirmGrip(ImperiumCard):
 
@@ -109,6 +153,11 @@ class FirmGrip(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR]
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.LANDSRAAT]
+
+    def revelation_reward(self, player: "Player") -> None:
+        # TODO needs implementation of aliance markers and refactor of influence trackers?
+        # We can call endpoints to modify game state from here
+        ...
 
 
 class FremenCamp(ImperiumCard):
@@ -119,6 +168,10 @@ class FremenCamp(ImperiumCard):
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+        player.swords += 1
+
 
 class GeneManipulation(ImperiumCard):
 
@@ -127,6 +180,9 @@ class GeneManipulation(ImperiumCard):
     factions: list[Faction] = [Faction.BENE_GESSERIT]
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
 
 
 class GuildAdministrator(ImperiumCard):
@@ -137,6 +193,9 @@ class GuildAdministrator(ImperiumCard):
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.SPACING_GUILD, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+
 
 class GuildAmbassador(ImperiumCard):
 
@@ -144,6 +203,10 @@ class GuildAmbassador(ImperiumCard):
     factions: list[Faction] = [Faction.SPACING_GUILD]
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT]
+
+    def revelation_reward(self, player: "Player") -> None:
+        # TODO needs implementation of aliance markers and refactor of influence trackers?
+        ...
 
 
 class GuildBankers(ImperiumCard):
@@ -157,6 +220,10 @@ class GuildBankers(ImperiumCard):
         AgentIcon.LANDSRAAT,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        # TODO requires more complex logic
+        ...
+
 
 class GunThopter(ImperiumCard):
 
@@ -165,12 +232,20 @@ class GunThopter(ImperiumCard):
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.swords += 3
+        # TODO requires more complex logic
+
 
 class GurneyHalleck(ImperiumCard):
 
     name: str = "gurney_halleck"
     persuasion_cost: int = 6
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+        # TODO requires more complex logic
 
 
 class ImperialSpy(ImperiumCard):
@@ -181,6 +256,10 @@ class ImperialSpy(ImperiumCard):
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.swords += 1
+
 
 class KwisatzHaderach(ImperiumCard):
 
@@ -188,6 +267,11 @@ class KwisatzHaderach(ImperiumCard):
     factions: list[Faction] = [Faction.BENE_GESSERIT]
     persuasion_cost: int = 8
     agent_icons: list[AgentIcon] = []
+
+    def revelation_reward(self, player: "Player") -> None:
+        card = player.source_deck.pop()
+        player.hand.add(card)
+        # TODO requires more complex logic
 
 
 class LadyJessica(ImperiumCard):
@@ -202,6 +286,10 @@ class LadyJessica(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 3
+        player.swords += 1
+
 
 class LietKynes(ImperiumCard):
 
@@ -209,6 +297,11 @@ class LietKynes(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR, Faction.FREMEN]
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        for card in player.in_play.cards:
+            if Faction.FREMEN in card.factions:
+                player.persuasion += 2
 
 
 class MissionariaProtectiva(ImperiumCard):
@@ -219,6 +312,9 @@ class MissionariaProtectiva(ImperiumCard):
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+
 
 class Opulence(ImperiumCard):
 
@@ -226,6 +322,10 @@ class Opulence(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR]
     persuasion_cost: int = 6
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        # TODO requires more complex logic
 
 
 class OtherMemory(ImperiumCard):
@@ -235,12 +335,19 @@ class OtherMemory(ImperiumCard):
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+
 
 class PiterDeVries(ImperiumCard):
 
     name: str = "piter_de_vries"
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 3
+        player.swords += 1
 
 
 class PowerPlay(ImperiumCard):
@@ -263,6 +370,10 @@ class ReverendMotherMohiam(ImperiumCard):
     persuasion_cost: int = 6
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.BENE_GESSERIT]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+        player.resources.spice += 2
+
 
 class SardaukarInfantry(ImperiumCard):
 
@@ -271,6 +382,10 @@ class SardaukarInfantry(ImperiumCard):
     factions: list[Faction] = [Faction.EMPEROR]
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = []
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.swords += 2
 
 
 class SardaukarLegion(ImperiumCard):
@@ -281,6 +396,10 @@ class SardaukarLegion(ImperiumCard):
     persuasion_cost: int = 5
     agent_icons: list[AgentIcon] = [AgentIcon.EMPEROR, AgentIcon.LANDSRAAT]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        # TODO requires more complex logic
+
 
 class Scout(ImperiumCard):
 
@@ -288,6 +407,11 @@ class Scout(ImperiumCard):
     repetitions: int = 2
     persuasion_cost: int = 1
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.swords += 1
+        # TODO requires more complex logic
 
 
 class ShiftingAllegiances(ImperiumCard):
@@ -297,6 +421,9 @@ class ShiftingAllegiances(ImperiumCard):
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+
 
 class SietchReverendMother(ImperiumCard):
 
@@ -304,6 +431,10 @@ class SietchReverendMother(ImperiumCard):
     factions: list[Faction] = [Faction.BENE_GESSERIT, Faction.FREMEN]
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.BENE_GESSERIT, AgentIcon.FREMEN]
+
+    def revelation_reward(self, player: "Player") -> None:
+        # TODO fremen bond
+        ...
 
 
 class SmugglersThopter(ImperiumCard):
@@ -314,6 +445,10 @@ class SmugglersThopter(ImperiumCard):
     persuasion_cost: int = 4
     agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.resources.spice += 1
+
 
 class SpaceTravel(ImperiumCard):
 
@@ -322,6 +457,9 @@ class SpaceTravel(ImperiumCard):
     factions: list[Faction] = [Faction.SPACING_GUILD]
     persuasion_cost: int = 3
     agent_icons: list[AgentIcon] = [AgentIcon.SPACING_GUILD]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
 
 
 class SpiceHunter(ImperiumCard):
@@ -332,6 +470,11 @@ class SpiceHunter(ImperiumCard):
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.swords += 1
+        # TODO fremen bond
+
 
 class SpiceSmugglers(ImperiumCard):
 
@@ -340,6 +483,10 @@ class SpiceSmugglers(ImperiumCard):
     factions: list[Faction] = [Faction.SPACING_GUILD]
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        player.swords += 1
 
 
 class Stilgar(ImperiumCard):
@@ -353,6 +500,10 @@ class Stilgar(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+        player.swords += 3
+
 
 class TestOfHumanity(ImperiumCard):
 
@@ -365,6 +516,9 @@ class TestOfHumanity(ImperiumCard):
         AgentIcon.CITY,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
+
 
 class TheVoice(ImperiumCard):
 
@@ -373,6 +527,9 @@ class TheVoice(ImperiumCard):
     factions: list[Faction] = [Faction.BENE_GESSERIT]
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
 
 
 class ThufirHawat(ImperiumCard):
@@ -388,6 +545,10 @@ class ThufirHawat(ImperiumCard):
         AgentIcon.SPICE_TRADE,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+        # TODO requires call to draw intrigue endpoint
+
 
 class WormRiders(ImperiumCard):
 
@@ -396,6 +557,11 @@ class WormRiders(ImperiumCard):
     factions: list[Faction] = [Faction.FREMEN]
     persuasion_cost: int = 6
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
+
+    def revelation_reward(self, player: "Player") -> None:
+        if player.fremen_influence.influence >= 1:
+            player.swords += 4
+        # TODO allieance marker logic
 
 
 class ImperiumDeck(BaseSourceDeck[ImperiumCard]):
