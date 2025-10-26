@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Self
 
-from dune_imperium.decks.base import BaseCard, BaseDeck
+from dune_imperium.decks.base import BaseCard, BaseSourceDeck
 
 
 class IntrigueType(str, Enum):
@@ -229,7 +229,7 @@ class Windfall(IntrigueCard):
     intrigue_types: list[IntrigueType] = [IntrigueType.PLOT]
 
 
-class IntrigueDeck(BaseDeck[IntrigueCard]):
+class IntrigueDeck(BaseSourceDeck[IntrigueCard]):
 
     def initialize(self) -> Self:
         super()._initialize(IntrigueCard)

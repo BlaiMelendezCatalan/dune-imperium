@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 
-from dune_imperium.decks.player import DiscardPile, InPlay, Intrigues, SourceDeck, Hand
+from dune_imperium.decks.player import (
+    DiscardPile,
+    InPlay,
+    Intrigues,
+    PlayerSourceDeck,
+    Hand,
+)
 from dune_imperium.decks.leaders import Leader
 from dune_imperium.map.trackers import InfluenceTracker
 from dune_imperium.tokens.agents import Agent
@@ -30,7 +36,7 @@ class Player(BaseModel):
     spacing_guild_influence: InfluenceTracker = InfluenceTracker()
     emperor_influence: InfluenceTracker = InfluenceTracker()
 
-    source_deck: SourceDeck = SourceDeck().initialize()
+    source_deck: PlayerSourceDeck = PlayerSourceDeck().initialize()
     hand: Hand = Hand()
     in_play: InPlay = InPlay()
     discard_pile: DiscardPile = DiscardPile()

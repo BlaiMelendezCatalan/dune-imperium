@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Self
-from dune_imperium.decks.base import BaseBigCard, BaseDeck
+from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
 from dune_imperium.agent_icons.icons import AgentIcon
 
 if TYPE_CHECKING:
@@ -72,7 +72,7 @@ class SeekAllies(InitialCard):
     ]
 
 
-class InitialDeck(BaseDeck[InitialCard]):
+class InitialDeck(BaseSourceDeck[InitialCard]):
 
     def initialize(self) -> Self:
         super()._initialize(InitialCard)

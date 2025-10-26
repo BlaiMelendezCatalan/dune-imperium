@@ -1,7 +1,7 @@
 from typing import Self
 from pydantic import BaseModel
 
-from dune_imperium.decks.base import BaseBigCard, BaseDeck
+from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
 from dune_imperium.decks.factions import Faction
 from dune_imperium.agent_icons.icons import AgentIcon
 
@@ -353,7 +353,7 @@ class Stilgar(ImperiumCard):
     ]
 
 
-class TesteOfHumanity(ImperiumCard):
+class TestOfHumanity(ImperiumCard):
 
     name: str = "test_of_humanity"
     factions: list[Faction] = [Faction.BENE_GESSERIT]
@@ -397,7 +397,7 @@ class WormRiders(ImperiumCard):
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
 
-class ImperiumDeck(BaseDeck[ImperiumCard]):
+class ImperiumDeck(BaseSourceDeck[ImperiumCard]):
 
     def initialize(self) -> Self:
         super()._initialize(ImperiumCard)
