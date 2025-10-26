@@ -53,7 +53,7 @@ class BaseBigCard(BaseCard):
         pass
 
     def revelation_reward(self, player: "Player") -> None:
-        print("********")
+        pass
 
 
 T_Card = TypeVar("T_Card", bound=BaseCard)

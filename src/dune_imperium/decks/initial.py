@@ -16,9 +16,7 @@ class ConvincingArgument(InitialCard):
     repetitions: int = 2
 
     def revelation_reward(self, player: "Player") -> None:
-        print(f"****{player.persuasion=}****")
-        player.persuasion += 1
-        print(f"****{player.persuasion=}****")
+        player.persuasion += 2
 
 
 class Dagger(InitialCard):
@@ -26,6 +24,9 @@ class Dagger(InitialCard):
     name: str = "dagger"
     repetitions: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.swords += 1
 
 
 class Diplomacy(InitialCard):
@@ -38,6 +39,9 @@ class Diplomacy(InitialCard):
         AgentIcon.FREMEN,
     ]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+
 
 class DuneTheDesertPlanet(InitialCard):
 
@@ -45,11 +49,17 @@ class DuneTheDesertPlanet(InitialCard):
     repetitions: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.SPICE_TRADE]
 
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
+
 
 class Reconnaissance(InitialCard):
 
     name: str = "reconnaissance"
     agent_icons: list[AgentIcon] = [AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
 
 
 class SignetRing(InitialCard):
@@ -60,6 +70,9 @@ class SignetRing(InitialCard):
         AgentIcon.CITY,
         AgentIcon.SPICE_TRADE,
     ]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 1
 
 
 class SeekAllies(InitialCard):
