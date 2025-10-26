@@ -1,8 +1,11 @@
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
 from dune_imperium.decks.factions import Faction
+
+if TYPE_CHECKING:
+    from dune_imperium.player import Player
 
 
 class ReserveCard(BaseBigCard): ...
@@ -15,6 +18,9 @@ class ArrakisLiaison(ReserveCard):
     factions: list[Faction] = [Faction.FREMEN]
     persuasion_cost: int = 2
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.persuasion += 2
 
 
 class FoldSpace(ReserveCard):
@@ -31,6 +37,9 @@ class TheSpiceMustFlow(ReserveCard):
     repetitions: int = 10
     persuasion_cost: int = 9
     agent_icons: list[AgentIcon] = [AgentIcon.LANDSRAAT, AgentIcon.CITY]
+
+    def revelation_reward(self, player: "Player") -> None:
+        player.resources.spice += 1
 
 
 class ArrakisLiaisonDeck(BaseSourceDeck[ArrakisLiaison]):
