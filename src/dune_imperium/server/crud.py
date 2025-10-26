@@ -1,8 +1,9 @@
 from asyncio import Lock
 from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator
+
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from typing import Any, AsyncGenerator
 
 from dune_imperium.database.models import Base, GameSQL
 from dune_imperium.game import Game

@@ -1,7 +1,8 @@
 from typing import Self
+
+from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
 from dune_imperium.decks.factions import Faction
-from dune_imperium.agent_icons.icons import AgentIcon
 
 
 class ReserveCard(BaseBigCard): ...

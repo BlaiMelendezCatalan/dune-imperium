@@ -6,7 +6,6 @@ from dune_imperium.decks.base import BaseBigCard, BaseCard
 from dune_imperium.decks.conflicts import ConflictCard
 from dune_imperium.decks.intrigue import IntrigueCard
 
-
 T_Card = TypeVar("T_Card", bound=BaseCard)
 
 

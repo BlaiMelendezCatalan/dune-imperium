@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi import APIRouter
 
 from dune_imperium.game import Game

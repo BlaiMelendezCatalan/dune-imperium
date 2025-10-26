@@ -1,10 +1,16 @@
 import random
+
 from pydantic import BaseModel
 
 from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.decks.conflicts import ConflictCard, ConflictDeck
-from dune_imperium.decks.imperium import ImperiumDeck, ExposedImperiumDeck
+from dune_imperium.decks.imperium import ExposedImperiumDeck, ImperiumDeck
 from dune_imperium.decks.intrigue import IntrigueDeck
+from dune_imperium.decks.leaders import (
+    CountessArianaThorvald,
+    GlossuRabban,
+    PaulAtreides,
+)
 from dune_imperium.decks.reserve import (
     ArrakisLiaisonDeck,
     FoldSpaceDeck,
@@ -17,11 +23,6 @@ from dune_imperium.decks.trash import (
 )
 from dune_imperium.map.locations import Locations
 from dune_imperium.player import Player
-from dune_imperium.decks.leaders import (
-    PaulAtreides,
-    GlossuRabban,
-    CountessArianaThorvald,
-)
 
 
 class Game(BaseModel):

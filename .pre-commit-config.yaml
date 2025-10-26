@@ -25,3 +25,15 @@ repos:
     language: system
     types: [python]
     pass_filenames: false
+  - id: isort
+    name: isort
+    entry: uvx isort src/ --profile black
+    language: system
+    types: [python]
+    pass_filenames: false
+  - id: poetry
+    name: poetry
+    entry: uvx poetry check
+    language: system
+    types: [python]
+    pass_filenames: false

@@ -1,4 +1,5 @@
 from random import shuffle
+
 from pydantic import BaseModel
 
 

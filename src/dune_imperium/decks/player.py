@@ -1,10 +1,10 @@
 from random import shuffle
-from pydantic import BaseModel
 from typing import Generic, Self, TypeVar, cast
+
+from pydantic import BaseModel
 
 from dune_imperium.decks.base import BaseBigCard, BasePlayerDeck
 from dune_imperium.decks.initial import InitialDeck
-
 
 T_BigCard = TypeVar("T_BigCard", bound=BaseBigCard)
 

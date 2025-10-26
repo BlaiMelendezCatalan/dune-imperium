@@ -1,9 +1,9 @@
 from asyncio import Lock
-from fastapi import Depends
 from typing import Annotated, Any
 
-from dune_imperium.server.crud import Crud
+from fastapi import Depends
 
+from dune_imperium.server.crud import Crud
 
 _lock: dict[str, Any] = {"general": Lock()}
 

@@ -1,4 +1,5 @@
 from typing import Any
+
 from sqlalchemy import JSON, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 

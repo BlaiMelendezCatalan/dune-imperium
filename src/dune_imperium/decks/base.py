@@ -1,5 +1,6 @@
 from random import shuffle
 from typing import TYPE_CHECKING, Generic, TypeVar
+
 from pydantic import BaseModel, model_validator
 
 from dune_imperium.agent_icons.icons import AgentIcon

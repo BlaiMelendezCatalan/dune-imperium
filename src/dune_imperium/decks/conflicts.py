@@ -1,7 +1,8 @@
 from enum import Enum
-from typing import Self
-from pydantic import BaseModel
 from random import shuffle
+from typing import Self
+
+from pydantic import BaseModel
 
 
 class ConflictNumber(str, Enum):
