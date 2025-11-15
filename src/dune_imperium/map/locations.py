@@ -359,38 +359,50 @@ class Wealth(Location):
 
 class Locations(BaseModel):
 
-    all_locations: list[Location] = []
-    spice_locations: list[SpiceLocation] = []
+    all_locations_dict: dict[str, Location] = {}
+    spice_locations_dict: dict[str, SpiceLocation] = {}
 
     def initialize(self) -> Self:
-        self.all_locations = [
-            subclass()  # pyright: ignore[reportCallIssue]
-            for subclass in Location.__subclasses__()
-            if subclass is not SpiceLocation
-        ]
-        self.spice_locations = [
-            subclass()  # pyright: ignore[reportCallIssue]
-            for subclass in SpiceLocation.__subclasses__()
-        ]
-        self.all_locations += self.spice_locations
-
+        for subclass in all_subclasses(Location):
+            if subclass is SpiceLocation:
+                continue
+            self.all_locations_dict.update(
+                {subclass.__name__: subclass()}  # pyright: ignore[reportCallIssue]
+            )
+            if issubclass(subclass, SpiceLocation):
+                self.spice_locations_dict.update(
+                    {subclass.__name__: subclass()}  # pyright: ignore[reportCallIssue]
+                )
         return self
 
     @model_validator(mode="before")
     def resolve_location_classes(cls, values):
-        all_locations = []
-        spice_locations = []
-        for location in values.get("all_locations", []):
-            location_class_name = item_name_to_item_class_name(location.get("name", ""))
+        all_locations_dict = {}
+        spice_locations_dict = {}
+        for location_name, location_values in values.get("all_locations", {}):
+            location_class_name = item_name_to_item_class_name(location_name)
             for subclass in all_subclasses(Location):
                 if subclass.__name__ == location_class_name:
-                    all_locations.append(subclass(**location))
+                    all_locations_dict[subclass.__name__] = subclass(**location_values)
                     if issubclass(subclass, SpiceLocation):
-                        spice_locations.append(subclass(**location))
+                        spice_locations_dict[subclass.__name__] = subclass(
+                            **location_values
+                        )
                     break
             else:
                 raise ValueError(
                     f"Card class not found for card name: {values.get('name')}"
                 )
 
-        return {"all_locations": all_locations, "spice_locations": spice_locations}
+        return {
+            "all_locations": all_locations_dict,
+            "spice_locations": spice_locations_dict,
+        }
+
+    @property
+    def all_locations(self) -> list[Location]:
+        return list(self.all_locations_dict.values())
+
+    @property
+    def spice_locations(self) -> list[SpiceLocation]:
+        return list(self.spice_locations_dict.values())

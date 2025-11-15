@@ -20,10 +20,7 @@ class InfluenceTracker(BaseModel):
         2: 0,
         3: 0,
     }
-
-    def __init__(self, faction: Faction, **data):
-        super().__init__(**data)
-        self.faction = faction
+    faction: Faction
 
     def increase_influence(self, player: "Player", game: "Game") -> None:
         self.influence[player.id] = min(MAX_INFLUENCE, self.influence[player.id] + 1)

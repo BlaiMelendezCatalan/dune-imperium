@@ -1,9 +1,7 @@
 from typing import TYPE_CHECKING, Self
 
-from pydantic import BaseModel
-
 from dune_imperium.agent_icons.icons import AgentIcon
-from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
+from dune_imperium.decks.base import BaseBigCard, BaseOpenDeck, BaseSourceDeck
 from dune_imperium.factions.factions import Faction
 
 if TYPE_CHECKING:
@@ -571,12 +569,4 @@ class ImperiumDeck(BaseSourceDeck[ImperiumCard]):
         return self
 
 
-class ExposedImperiumDeck(BaseModel):
-
-    cards: dict[str, ImperiumCard] = {}
-
-    def add(self, card: ImperiumCard):
-        self.cards.update({card.name: card})
-
-    def pop(self, card_name: str) -> ImperiumCard:
-        return self.cards.pop(card_name)
+class ExposedImperiumDeck(BaseOpenDeck): ...

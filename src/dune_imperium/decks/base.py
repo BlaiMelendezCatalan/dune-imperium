@@ -17,17 +17,14 @@ class BaseCard(BaseModel):
     repetitions: int = 1
 
     @model_validator(mode="before")
-    def resolve_card_class(cls, values):  # TODO blai: is this necessary?
+    def resolve_card_class(cls, values):
         card_class_name = item_name_to_item_class_name(values.get("name", ""))
         # During initialization, cls is the correct subclass
         if cls.__name__ == card_class_name:
             return values
         for subclass in all_subclasses(BaseCard):
             if subclass.__name__ == card_class_name:
-                model_fields = {
-                    key: field.default for key, field in subclass.model_fields.items()
-                }
-                return model_fields
+                return subclass(**values)
 
         raise ValueError(f"Card class not found for card name: {values.get('name')}")
 
@@ -91,7 +88,7 @@ class BaseSourceDeck(BaseModel, Generic[T_Card]):
         return {"cards": cards}
 
 
-class BasePlayerDeck(BaseModel, Generic[T_Card]):
+class BaseOpenDeck(BaseModel, Generic[T_Card]):
 
     card_dict: dict[str, T_Card] = {}
 

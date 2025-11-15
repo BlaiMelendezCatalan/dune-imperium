@@ -1,38 +1,31 @@
 from random import shuffle
-from typing import Generic, Self, TypeVar, cast
+from typing import Self, TypeVar, cast
 
-from pydantic import BaseModel
-
-from dune_imperium.decks.base import BaseBigCard, BasePlayerDeck
+from dune_imperium.decks.base import BaseBigCard, BaseOpenDeck, BaseSourceDeck
 from dune_imperium.decks.initial import InitialDeck
 
 T_BigCard = TypeVar("T_BigCard", bound=BaseBigCard)
 
 
-class PlayerSourceDeck(BaseModel, Generic[T_BigCard]):
-
-    cards: list[T_BigCard] = []
+class PlayerSourceDeck(BaseSourceDeck):
 
     def initialize(self) -> Self:
         initial_deck = InitialDeck().initialize()
-        self.cards = cast(list[T_BigCard], initial_deck.cards)
+        self.cards = cast(list[BaseBigCard], initial_deck.cards)
         return self
 
     def rebuild(self, cards: list[T_BigCard]) -> None:
         shuffle(cards)
         self.cards = cards
 
-    def pop(self) -> T_BigCard:
-        return self.cards.pop()
+
+class Hand(BaseOpenDeck): ...
 
 
-class Hand(BasePlayerDeck): ...
+class InPlay(BaseOpenDeck): ...
 
 
-class InPlay(BasePlayerDeck): ...
+class DiscardPile(BaseOpenDeck): ...
 
 
-class DiscardPile(BasePlayerDeck): ...
-
-
-class Intrigues(BasePlayerDeck): ...
+class Intrigues(BaseOpenDeck): ...
