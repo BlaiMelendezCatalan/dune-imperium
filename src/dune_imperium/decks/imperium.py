@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
-from dune_imperium.decks.factions import Faction
+from dune_imperium.factions.factions import Faction
 
 if TYPE_CHECKING:
     from dune_imperium.player import Player
@@ -559,9 +559,9 @@ class WormRiders(ImperiumCard):
     agent_icons: list[AgentIcon] = [AgentIcon.CITY, AgentIcon.SPICE_TRADE]
 
     def revelation_reward(self, player: "Player") -> None:
-        if player.fremen_influence.influence >= 1:
-            player.swords += 4
+        # TODO fremen influence logic
         # TODO allieance marker logic
+        ...
 
 
 class ImperiumDeck(BaseSourceDeck[ImperiumCard]):

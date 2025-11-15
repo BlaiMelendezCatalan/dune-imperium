@@ -21,6 +21,8 @@ from dune_imperium.decks.trash import (
     TrashedConflictDeck,
     TrashedIntrigueDeck,
 )
+from dune_imperium.factions.factions import Faction
+from dune_imperium.map.influence import InfluenceTracker
 from dune_imperium.map.locations import Locations
 from dune_imperium.player import Player
 
@@ -43,19 +45,38 @@ class Game(BaseModel):
 
     current_player: int | None = None
 
-    map: Locations = Locations()
+    map: Locations = Locations().initialize()
 
     imperium_deck: ImperiumDeck = ImperiumDeck().initialize()
     exposed_imperium_deck: ExposedImperiumDeck = ExposedImperiumDeck()
     trashed_big_card_deck: TrashedBigCardDeck = TrashedBigCardDeck()
+
     intrigue_deck: IntrigueDeck = IntrigueDeck().initialize()
     trashed_intrigue_deck: TrashedIntrigueDeck = TrashedIntrigueDeck()
+
     conflict_deck: ConflictDeck = ConflictDeck().initialize()
     conflict_in_play: ConflictCard | None = None
     trashed_conflict_deck: TrashedConflictDeck = TrashedConflictDeck()
+
     arrakis_liaison_deck: ArrakisLiaisonDeck = ArrakisLiaisonDeck().initialize()
     fold_space_deck: FoldSpaceDeck = FoldSpaceDeck().initialize()
     the_spice_must_flow_deck: TheSpiceMustFlowDeck = TheSpiceMustFlowDeck().initialize()
+
+    fremen_influence: InfluenceTracker = InfluenceTracker(faction=Faction.FREMEN)
+    bene_gesserit_influence: InfluenceTracker = InfluenceTracker(
+        faction=Faction.BENE_GESSERIT
+    )
+    spacing_guild_influence: InfluenceTracker = InfluenceTracker(
+        faction=Faction.SPACING_GUILD
+    )
+    emperor_influence: InfluenceTracker = InfluenceTracker(faction=Faction.EMPEROR)
+
+    alliance_tracker: dict[Faction, int | None] = {
+        Faction.FREMEN: None,
+        Faction.BENE_GESSERIT: None,
+        Faction.SPACING_GUILD: None,
+        Faction.EMPEROR: None,
+    }
 
     def round_start(self) -> None:
         # A new conflict card is exposed

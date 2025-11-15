@@ -8,10 +8,9 @@ from dune_imperium.decks.player import (
     Intrigues,
     PlayerSourceDeck,
 )
-from dune_imperium.map.trackers import InfluenceTracker
 from dune_imperium.tokens.agents import Agent
 from dune_imperium.tokens.resources import Resources
-from dune_imperium.tokens.troops import Troop
+from dune_imperium.tokens.troops import TroopPool
 
 
 class Player(BaseModel):
@@ -29,12 +28,7 @@ class Player(BaseModel):
 
     agents: list[Agent] = [Agent() for _ in range(2)]
 
-    troops: list[Troop] = [Troop() for _ in range(16)]
-
-    fremen_influence: InfluenceTracker = InfluenceTracker()
-    bene_gesserit_influence: InfluenceTracker = InfluenceTracker()
-    spacing_guild_influence: InfluenceTracker = InfluenceTracker()
-    emperor_influence: InfluenceTracker = InfluenceTracker()
+    troops: TroopPool = TroopPool()
 
     source_deck: PlayerSourceDeck = PlayerSourceDeck().initialize()
     hand: Hand = Hand()

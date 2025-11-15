@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from pydantic import BaseModel, model_validator
 
 from dune_imperium.agent_icons.icons import AgentIcon
-from dune_imperium.decks.factions import Faction
+from dune_imperium.factions.factions import Faction
+from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 if TYPE_CHECKING:
     from dune_imperium.player import Player
@@ -16,24 +17,12 @@ class BaseCard(BaseModel):
     repetitions: int = 1
 
     @model_validator(mode="before")
-    def resolve_card_class(cls, values):
-        def _card_name_to_card_class_name(card_name: str) -> str:
-            card_name_without_rep = card_name.split("__")[0]
-            return "".join(
-                word.capitalize() for word in card_name_without_rep.split("_")
-            )
-
-        def _all_subclasses(cls):
-            subclasses = set(cls.__subclasses__())
-            for subclass in cls.__subclasses__():
-                subclasses.update(_all_subclasses(subclass))
-            return subclasses
-
-        card_class_name = _card_name_to_card_class_name(values.get("name", ""))
+    def resolve_card_class(cls, values):  # TODO blai: is this necessary?
+        card_class_name = item_name_to_item_class_name(values.get("name", ""))
         # During initialization, cls is the correct subclass
         if cls.__name__ == card_class_name:
             return values
-        for subclass in _all_subclasses(BaseCard):
+        for subclass in all_subclasses(BaseCard):
             if subclass.__name__ == card_class_name:
                 model_fields = {
                     key: field.default for key, field in subclass.model_fields.items()
@@ -50,10 +39,10 @@ class BaseBigCard(BaseCard):
     persuasion_cost: int = 0
 
     def agent_reward(self, player: "Player") -> None:
-        pass
+        raise NotImplementedError("This method should be overridden in subclasses")
 
     def revelation_reward(self, player: "Player") -> None:
-        pass
+        raise NotImplementedError("This method should be overridden in subclasses")
 
 
 T_Card = TypeVar("T_Card", bound=BaseCard)
@@ -87,23 +76,10 @@ class BaseSourceDeck(BaseModel, Generic[T_Card]):
 
     @model_validator(mode="before")
     def resolve_card_classes(cls, values):
-
-        def _card_name_to_card_class_name(card_name: str) -> str:
-            card_name_without_rep = card_name.split("__")[0]
-            return "".join(
-                word.capitalize() for word in card_name_without_rep.split("_")
-            )
-
-        def _all_subclasses(cls):
-            subclasses = set(cls.__subclasses__())
-            for subclass in cls.__subclasses__():
-                subclasses.update(_all_subclasses(subclass))
-            return subclasses
-
         cards = []
         for card in values.get("cards", []):
-            card_class_name = _card_name_to_card_class_name(card.get("name", ""))
-            for subclass in _all_subclasses(BaseCard):
+            card_class_name = item_name_to_item_class_name(card.get("name", ""))
+            for subclass in all_subclasses(BaseCard):
                 if subclass.__name__ == card_class_name:
                     cards.append(subclass(**card))
                     break
@@ -136,23 +112,10 @@ class BasePlayerDeck(BaseModel, Generic[T_Card]):
 
     @model_validator(mode="before")
     def resolve_card_classes(cls, values):
-
-        def _card_name_to_card_class_name(card_name: str) -> str:
-            card_name_without_rep = card_name.split("__")[0]
-            return "".join(
-                word.capitalize() for word in card_name_without_rep.split("_")
-            )
-
-        def _all_subclasses(cls):
-            subclasses = set(cls.__subclasses__())
-            for subclass in cls.__subclasses__():
-                subclasses.update(_all_subclasses(subclass))
-            return subclasses
-
         card_dict = {}
         for card_name, card_values in values.get("card_dict", {}).items():
-            card_class_name = _card_name_to_card_class_name(card_name)
-            for subclass in _all_subclasses(BaseCard):
+            card_class_name = item_name_to_item_class_name(card_name)
+            for subclass in all_subclasses(BaseCard):
                 if subclass.__name__ == card_class_name:
                     card_dict[card_name] = subclass(**card_values)
                     break

@@ -37,6 +37,8 @@ def make_routes() -> APIRouter:
     async def delete_game(game_id: str, crud: CrudDependency):
         return await crud.delete_game(game_id)
 
+    # TODO implement influence and alliances end points
+
     # @router.post("/{game_id}/add_player/")
     # async def add_player(): ...
 

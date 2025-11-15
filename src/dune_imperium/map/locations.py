@@ -1,7 +1,10 @@
-from pydantic import BaseModel
+from typing import Self
+
+from pydantic import BaseModel, model_validator
 
 from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.map.control import Control, SolariControl, SpiceControl
+from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 
 class Cost(BaseModel):
@@ -359,8 +362,7 @@ class Locations(BaseModel):
     all_locations: list[Location] = []
     spice_locations: list[SpiceLocation] = []
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def initialize(self) -> Self:
         self.all_locations = [
             subclass()  # pyright: ignore[reportCallIssue]
             for subclass in Location.__subclasses__()
@@ -371,3 +373,24 @@ class Locations(BaseModel):
             for subclass in SpiceLocation.__subclasses__()
         ]
         self.all_locations += self.spice_locations
+
+        return self
+
+    @model_validator(mode="before")
+    def resolve_location_classes(cls, values):
+        all_locations = []
+        spice_locations = []
+        for location in values.get("all_locations", []):
+            location_class_name = item_name_to_item_class_name(location.get("name", ""))
+            for subclass in all_subclasses(Location):
+                if subclass.__name__ == location_class_name:
+                    all_locations.append(subclass(**location))
+                    if issubclass(subclass, SpiceLocation):
+                        spice_locations.append(subclass(**location))
+                    break
+            else:
+                raise ValueError(
+                    f"Card class not found for card name: {values.get('name')}"
+                )
+
+        return {"all_locations": all_locations, "spice_locations": spice_locations}

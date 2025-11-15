@@ -1,12 +1,13 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.server.dependencies import CrudDependency
 
 
 def make_routes() -> APIRouter:
 
-    router = APIRouter(prefix="/player", tags=["imperium_cards"])
+    router = APIRouter(prefix="/action", tags=["actions"])
 
     class Request(BaseModel):
         game_id: str
@@ -40,22 +41,29 @@ def make_routes() -> APIRouter:
         game.exposed_imperium_deck.add(game.imperium_deck.pop())
         await crud.update_game(game)
 
-    @router.post("/play_card/{card_name}")
-    async def play_card(card_name: str, crud: CrudDependency, request: Request):
+    @router.post("/agent_turn/{card_name}/{location_name}")
+    async def agent_turn(
+        card_name: str, location_name: str, crud: CrudDependency, request: Request
+    ):
+        # TODO this should also receive location_name, and then:
+        # 1. check that the player has an available agent
+        # 2. check that the location is not full
+        # 3. deploy the agent to that location paying any costs
+        # 4. get agent reward
+        # 5. get location reward
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        card = player.hand.pop(card_name)
+        card: BaseBigCard = player.hand.pop(card_name)
         player.in_play.add(card)
         card.agent_reward(player)
         await crud.update_game(game)
 
-    @router.post("/reveal_hand")
-    async def reveal_hand(crud: CrudDependency, request: Request):
+    @router.post("/reveal_turn")
+    async def reveal_turn(crud: CrudDependency, request: Request):
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
         while player.hand.cards:
-            card = player.hand.pop()
-            print(f"Revealed card: {card.name} ({type(card)})")
+            card: BaseBigCard = player.hand.pop()
             card.revelation_reward(player)
             player.in_play.add(card)
         while player.in_play.cards:
