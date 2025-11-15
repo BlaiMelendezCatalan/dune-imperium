@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from pydantic import BaseModel, model_validator
 
-from dune_imperium.agent_icons.icons import AgentIcon
-from dune_imperium.factions.factions import Faction
+from dune_imperium.elements.factions import Faction
+from dune_imperium.elements.icons import AgentIcon
 from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 if TYPE_CHECKING:
@@ -15,18 +15,6 @@ class BaseCard(BaseModel):
 
     name: str
     repetitions: int = 1
-
-    @model_validator(mode="before")
-    def resolve_card_class(cls, values):
-        card_class_name = item_name_to_item_class_name(values.get("name", ""))
-        # During initialization, cls is the correct subclass
-        if cls.__name__ == card_class_name:
-            return values
-        for subclass in all_subclasses(BaseCard):
-            if subclass.__name__ == card_class_name:
-                return subclass(**values)
-
-        raise ValueError(f"Card class not found for card name: {values.get('name')}")
 
 
 class BaseBigCard(BaseCard):

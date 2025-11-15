@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Self
 
-from dune_imperium.agent_icons.icons import AgentIcon
 from dune_imperium.decks.base import BaseBigCard, BaseSourceDeck
-from dune_imperium.factions.factions import Faction
+from dune_imperium.elements.factions import Faction
+from dune_imperium.elements.icons import AgentIcon
 
 if TYPE_CHECKING:
     from dune_imperium.player import Player

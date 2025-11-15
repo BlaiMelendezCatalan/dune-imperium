@@ -8,9 +8,9 @@ from dune_imperium.decks.player import (
     Intrigues,
     PlayerSourceDeck,
 )
-from dune_imperium.tokens.agents import Agent
-from dune_imperium.tokens.resources import Resources
-from dune_imperium.tokens.troops import TroopPool
+from dune_imperium.elements.tokens.agents import Agent
+from dune_imperium.elements.tokens.resources import Resources
+from dune_imperium.elements.tokens.troops import TroopPool
 
 
 class Player(BaseModel):
@@ -18,8 +18,6 @@ class Player(BaseModel):
     id: int
 
     leader: Leader
-
-    victory_points: int
 
     resources: Resources = Resources()
 

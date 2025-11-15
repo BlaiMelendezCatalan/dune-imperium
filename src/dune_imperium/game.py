@@ -21,9 +21,9 @@ from dune_imperium.decks.trash import (
     TrashedConflictDeck,
     TrashedIntrigueDeck,
 )
-from dune_imperium.factions.factions import Faction
-from dune_imperium.map.influence import InfluenceTracker
+from dune_imperium.elements.factions import Faction
 from dune_imperium.map.locations import Locations
+from dune_imperium.map.trackers import InfluenceTracker, VictoryPointsTracker
 from dune_imperium.player import Player
 
 
@@ -34,9 +34,9 @@ class Game(BaseModel):
     name: str
 
     players: dict[int, Player] = {  # TODO these are hardcoded values to make it work
-        0: Player(id=0, leader=PaulAtreides(), victory_points=0),
-        1: Player(id=1, leader=GlossuRabban(), victory_points=0),
-        2: Player(id=2, leader=CountessArianaThorvald(), victory_points=0),
+        0: Player(id=0, leader=PaulAtreides()),
+        1: Player(id=1, leader=GlossuRabban()),
+        2: Player(id=2, leader=CountessArianaThorvald()),
     }
 
     round: int = 1
@@ -78,6 +78,8 @@ class Game(BaseModel):
         Faction.EMPEROR: None,
     }
 
+    victory_points_tracker: VictoryPointsTracker = VictoryPointsTracker()
+
     def round_start(self) -> None:
         # A new conflict card is exposed
         self.conflict_in_play = self.conflict_deck.cards.pop(0)
@@ -93,7 +95,7 @@ class Game(BaseModel):
 
     def recall(self) -> None:
         if self.round == 10 or any(
-            [player.victory_points >= 10 for player in list(self.players.values())]
+            [any(v >= 10 for v in self.victory_points_tracker.victory_points.values())]
         ):
             # Play endgame intrigue cards
             # Get players victory points

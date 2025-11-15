@@ -2,7 +2,7 @@ from typing import Self
 
 from pydantic import BaseModel, model_validator
 
-from dune_imperium.agent_icons.icons import AgentIcon
+from dune_imperium.elements.icons import AgentIcon
 from dune_imperium.map.control import Control, SolariControl, SpiceControl
 from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 

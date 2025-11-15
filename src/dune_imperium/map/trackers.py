@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from dune_imperium.factions.factions import Faction
+from dune_imperium.elements.factions import Faction
 
 if TYPE_CHECKING:
     from dune_imperium.game import Game
@@ -25,7 +25,7 @@ class InfluenceTracker(BaseModel):
     def increase_influence(self, player: "Player", game: "Game") -> None:
         self.influence[player.id] = min(MAX_INFLUENCE, self.influence[player.id] + 1)
         if self.influence[player.id] == 2:
-            player.victory_points += 1
+            game.victory_points_tracker.add_victory_points(player, 1)
         if self.influence[player.id] == 4:
             match self.faction:
                 case Faction.FREMEN:
@@ -46,15 +46,17 @@ class InfluenceTracker(BaseModel):
                 return
             elif not former_player_id or former_player_id != player.id:
                 game.alliance_tracker[self.faction] = player.id
-                player.victory_points += 1
+                game.victory_points_tracker.add_victory_points(player, 1)
                 if former_player_id:
                     former_player = game.players[former_player_id]
-                    former_player.victory_points -= 1
+                    game.victory_points_tracker.subtract_victory_points(
+                        former_player, 1
+                    )
 
     def decrease_influence(self, player: "Player", game: "Game") -> None:
         self.influence[player.id] = max(0, self.influence[player.id] - 1)
         if self.influence[player.id] == 1:
-            player.victory_points -= 1
+            game.victory_points_tracker.subtract_victory_points(player, 1)
         if player.id not in self._get_leading_players_id():
             # TODO think about alliance removal
             ...
@@ -67,3 +69,19 @@ class InfluenceTracker(BaseModel):
             if influence == max_influence
         ]
         return leading_players
+
+
+class VictoryPointsTracker(BaseModel):
+
+    victory_points: dict[int, int] = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+    }
+
+    def add_victory_points(self, player: "Player", points: int) -> None:
+        self.victory_points[player.id] += points
+
+    def subtract_victory_points(self, player: "Player", points: int) -> None:
+        self.victory_points[player.id] = max(0, self.victory_points[player.id] - points)
