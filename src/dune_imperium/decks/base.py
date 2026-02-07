@@ -70,7 +70,7 @@ class BaseSourceDeck(BaseModel, Generic[T_Card]):
                     break
             else:
                 raise ValueError(
-                    f"Card class not found for card name: {values.get('name')}"
+                    f"Card class not found for card: {card.get('name', '')}"
                 )
 
         return {"cards": cards}
@@ -105,8 +105,6 @@ class BaseOpenDeck(BaseModel, Generic[T_Card]):
                     card_dict[card_name] = subclass(**card_values)
                     break
             else:
-                raise ValueError(
-                    f"Card class not found for card name: {values.get('name')}"
-                )
+                raise ValueError(f"Card class not found for card: {card_name}")
 
         return {"card_dict": card_dict}

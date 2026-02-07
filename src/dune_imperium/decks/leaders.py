@@ -53,7 +53,7 @@ class HelenaRichese(Leader):
 
 class PaulAtreides(Leader):
 
-    name: str = "paul_atraides"
+    name: str = "paul_atreides"
 
 
 class LeaderDeck(BaseModel):

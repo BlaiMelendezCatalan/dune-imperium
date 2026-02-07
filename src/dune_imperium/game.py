@@ -4,6 +4,7 @@ from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.decks.conflicts import ConflictCard, ConflictDeck
 from dune_imperium.decks.imperium import ExposedImperiumDeck, ImperiumDeck
 from dune_imperium.decks.intrigue import IntrigueDeck
+from dune_imperium.decks.leaders import PaulAtreides
 from dune_imperium.decks.reserve import (
     ArrakisLiaisonDeck,
     FoldSpaceDeck,
@@ -26,9 +27,13 @@ class Game(BaseModel):
 
     name: str
 
-    players: dict[int, Player] = {}
+    players: dict[int, Player] = {
+        0: Player(id=0, leader=PaulAtreides()),
+    }
 
     round: int = 1
+
+    first_player: int = 0
 
     current_player: int | None = None
 
