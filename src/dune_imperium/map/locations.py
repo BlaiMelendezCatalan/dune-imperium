@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Self
 from pydantic import BaseModel, model_validator
 
 from dune_imperium.elements.icons import AgentIcon
-from dune_imperium.map.control import Control, SolariControl, SpiceControl
+from dune_imperium.map.control import ControlType, SolariControl, SpiceControl
 from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ class Location(BaseModel):
     name: str
     agent_icon: AgentIcon
     combat: bool = False
-    control: Control | None = None
+    control: ControlType = None
     cost: Cost = Cost()  # TODO: set cost for the locations that have one.
     free: bool = True
 
@@ -49,7 +49,7 @@ class Arrakeen(Location):
     name: str = "arrakeen"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
-    control: Control | None = SolariControl()
+    control: ControlType = SolariControl()
 
     def pay(self, player: "Player", game: "Game") -> None:
         pass
@@ -65,7 +65,7 @@ class Carthag(Location):
     name: str = "carthag"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
-    control: Control | None = SolariControl()
+    control: ControlType = SolariControl()
 
     def pay(self, player: "Player", game: "Game") -> None:
         return
@@ -193,7 +193,7 @@ class ImperialBasin(SpiceLocation):
     name: str = "imperial_basin"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
     combat: bool = True
-    control: Control | None = SpiceControl()
+    control: ControlType = SpiceControl()
 
     def pay(self, player: "Player", game: "Game") -> None:
         return
@@ -233,7 +233,7 @@ class RallyTroops(Location):
 
 class ResearchStation(Location):
 
-    name: str = "research_location"
+    name: str = "research_station"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
 
@@ -365,12 +365,13 @@ class Locations(BaseModel):
         for subclass in all_subclasses(Location):
             if subclass is SpiceLocation:
                 continue
+            location_name = subclass.model_fields["name"].default
             self.all_locations_dict.update(
-                {subclass.__name__: subclass()}  # pyright: ignore[reportCallIssue]
+                {location_name: subclass()}  # pyright: ignore[reportCallIssue]
             )
             if issubclass(subclass, SpiceLocation):
                 self.spice_locations_dict.update(
-                    {subclass.__name__: subclass()}  # pyright: ignore[reportCallIssue]
+                    {location_name: subclass()}  # pyright: ignore[reportCallIssue]
                 )
         return self
 
@@ -378,24 +379,26 @@ class Locations(BaseModel):
     def resolve_location_classes(cls, values):
         all_locations_dict = {}
         spice_locations_dict = {}
-        for location_name, location_values in values.get("all_locations", {}):
+        for location_name, location_values in values.get(
+            "all_locations_dict", {}
+        ).items():
             location_class_name = item_name_to_item_class_name(location_name)
             for subclass in all_subclasses(Location):
                 if subclass.__name__ == location_class_name:
-                    all_locations_dict[subclass.__name__] = subclass(**location_values)
+                    all_locations_dict[location_name] = subclass(**location_values)
                     if issubclass(subclass, SpiceLocation):
-                        spice_locations_dict[subclass.__name__] = subclass(
+                        spice_locations_dict[location_name] = subclass(
                             **location_values
                         )
                     break
             else:
                 raise ValueError(
-                    f"Card class not found for card name: {values.get('name')}"
+                    f"Location class not found for location: {location_name}"
                 )
 
         return {
-            "all_locations": all_locations_dict,
-            "spice_locations": spice_locations_dict,
+            "all_locations_dict": all_locations_dict,
+            "spice_locations_dict": spice_locations_dict,
         }
 
     @property

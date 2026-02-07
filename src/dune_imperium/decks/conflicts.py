@@ -2,7 +2,9 @@ from enum import Enum
 from random import shuffle
 from typing import Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
+
+from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 
 class ConflictNumber(str, Enum):
@@ -89,7 +91,7 @@ class SecureImperialBasin(ConflictCard):
 
 class SiegeOfArrakeen(ConflictCard):
 
-    name: str = "siege_of_carthag"
+    name: str = "siege_of_arrakeen"
     conflict_number: ConflictNumber = ConflictNumber.TWO
 
 
@@ -162,3 +164,19 @@ class ConflictDeck(BaseModel):
 
     def pop(self) -> ConflictCard:
         return self.cards.pop()
+
+    @model_validator(mode="before")
+    def resolve_card_classes(cls, values):
+        cards = []
+        for card in values.get("cards", []):
+            card_class_name = item_name_to_item_class_name(card.get("name", ""))
+            for subclass in all_subclasses(ConflictCard):
+                if subclass.__name__ == card_class_name:
+                    cards.append(subclass(**card))
+                    break
+            else:
+                raise ValueError(
+                    f"Card class not found for card: {card.get('name', '')}"
+                )
+
+        return {"cards": cards}
