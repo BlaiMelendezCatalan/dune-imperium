@@ -29,7 +29,8 @@ class TroopPool(BaseModel):  # TODO needs review. SHould this trigger frontend e
     troops: list[Troop] = [Troop() for _ in range(12)]
 
     def recruit(self, number: int) -> None:
-        number = min(number, len(self.supply))
+        if number > len(self.conflict):
+            raise ValueError("Not enough troops available to recruit.")
         for troop in self.supply[:number]:
             troop.to_garrison()
 

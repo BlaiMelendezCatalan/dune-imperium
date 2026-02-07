@@ -2,11 +2,7 @@ from pydantic import BaseModel
 
 from dune_imperium.decks.leaders import Leader
 from dune_imperium.decks.player import (
-    DiscardPile,
-    Hand,
-    InPlay,
-    Intrigues,
-    PlayerSourceDeck,
+    PlayerDecks,
 )
 from dune_imperium.elements.tokens.agents import Agent
 from dune_imperium.elements.tokens.resources import Resources
@@ -28,8 +24,4 @@ class Player(BaseModel):
 
     troops: TroopPool = TroopPool()
 
-    source_deck: PlayerSourceDeck = PlayerSourceDeck().initialize()
-    hand: Hand = Hand()
-    in_play: InPlay = InPlay()
-    discard_pile: DiscardPile = DiscardPile()
-    intrigues: Intrigues = Intrigues()
+    decks: PlayerDecks = PlayerDecks()

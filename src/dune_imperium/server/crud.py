@@ -1,5 +1,6 @@
 from asyncio import Lock
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any, AsyncGenerator
 
 from sqlalchemy import delete, select, update
@@ -11,13 +12,13 @@ from dune_imperium.game import Game
 
 class Crud:
 
-    def __init__(self, lock: dict[str, Any]) -> None:
+    def __init__(self, lock: dict[str, Any], db_path: Path) -> None:
         self._lock = lock
+        self._db_path = db_path
 
     async def initialize_database(self) -> None:
-        engine = create_async_engine(
-            "sqlite+aiosqlite:///./test.db", echo=True
-        )  # TODO: put this in some constants.py file
+        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        engine = create_async_engine(f"sqlite+aiosqlite:///{self._db_path}", echo=True)
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
@@ -27,7 +28,7 @@ class Crud:
             self._lock[lock_name] = Lock()
         async with self._lock[lock_name]:
             engine = create_async_engine(
-                "sqlite+aiosqlite:///./test.db", echo=True
+                f"sqlite+aiosqlite:///{self._db_path}", echo=True
             )  # TODO: put this in some constants.py file
             async_session = async_sessionmaker(engine, expire_on_commit=False)
             async with async_session.begin() as session:

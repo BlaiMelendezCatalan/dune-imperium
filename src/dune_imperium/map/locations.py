@@ -1,10 +1,14 @@
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from pydantic import BaseModel, model_validator
 
 from dune_imperium.elements.icons import AgentIcon
 from dune_imperium.map.control import Control, SolariControl, SpiceControl
 from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
+
+if TYPE_CHECKING:
+    from dune_imperium.game import Game
+    from dune_imperium.player import Player
 
 
 class Cost(BaseModel):
@@ -24,10 +28,10 @@ class Location(BaseModel):
     cost: Cost = Cost()  # TODO: set cost for the locations that have one.
     free: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         raise NotImplementedError("This method should be overridden in subclasses")
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         raise NotImplementedError("This method should be overridden in subclasses")
 
 
@@ -39,12 +43,6 @@ class SpiceLocation(Location):
         if self.free:
             self.extra_spice += 1
 
-    def pay(self, player_id: int) -> None:
-        raise NotImplementedError("This method should be overridden in subclasses")
-
-    def reward(self, player_id: int) -> None:
-        raise NotImplementedError("This method should be overridden in subclasses")
-
 
 class Arrakeen(Location):
 
@@ -53,12 +51,13 @@ class Arrakeen(Location):
     combat: bool = True
     control: Control | None = SolariControl()
 
-    def pay(self, player_id: int) -> None:
-        return
+    def pay(self, player: "Player", game: "Game") -> None:
+        pass
 
-    def reward(self, player_id: int) -> None:
-        # TODO
-        ...
+    def reward(self, player: "Player", game: "Game") -> None:
+        player.troops.recruit(1)
+        card = player.decks.source_deck.pop()
+        player.decks.hand.add(card)
 
 
 class Carthag(Location):
@@ -68,10 +67,10 @@ class Carthag(Location):
     combat: bool = True
     control: Control | None = SolariControl()
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -81,11 +80,11 @@ class Conspire(Location):
     name: str = "conspire"
     agent_icon: AgentIcon = AgentIcon.EMPEROR
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -95,10 +94,10 @@ class FoldSpace(Location):
     name: str = "fold_space"
     agent_icon: AgentIcon = AgentIcon.SPACING_GUILD
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -109,10 +108,10 @@ class TheGreatFlat(SpiceLocation):
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -123,11 +122,11 @@ class HaggaBasin(SpiceLocation):
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         self.extra_spice = 0
 
@@ -137,10 +136,10 @@ class HallOfOratory(Location):
     name: str = "hall_of_oratory"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -151,11 +150,11 @@ class HardyWarriors(Location):
     agent_icon: AgentIcon = AgentIcon.FREMEN
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -166,11 +165,11 @@ class Heighliner(Location):
     agent_icon: AgentIcon = AgentIcon.SPACING_GUILD
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -180,11 +179,11 @@ class HighCouncil(Location):
     name: str = "high_council"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -196,10 +195,10 @@ class ImperialBasin(SpiceLocation):
     combat: bool = True
     control: Control | None = SpiceControl()
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         self.extra_spice = 0
 
@@ -209,11 +208,11 @@ class Mentat(Location):
     name: str = "mentat"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -223,11 +222,11 @@ class RallyTroops(Location):
     name: str = "rally_troops"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -238,11 +237,11 @@ class ResearchStation(Location):
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -252,10 +251,10 @@ class Secrets(Location):
     name: str = "secrets"
     agent_icon: AgentIcon = AgentIcon.BENE_GESSERIT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -265,10 +264,10 @@ class SecureContract(Location):
     name: str = "secure_contract"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -278,11 +277,11 @@ class SelectiveBreeding(Location):
     name: str = "selective_breeding"
     agent_icon: AgentIcon = AgentIcon.BENE_GESSERIT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -292,11 +291,11 @@ class SellMelange(Location):
     name: str = "sell_melange"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -307,11 +306,11 @@ class SietchTabr(Location):
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -322,10 +321,10 @@ class Stillsuits(Location):
     agent_icon: AgentIcon = AgentIcon.FREMEN
     combat: bool = True
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -335,11 +334,11 @@ class Swordmaster(Location):
     name: str = "swordmaster"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 
@@ -349,10 +348,10 @@ class Wealth(Location):
     name: str = "wealth"
     agent_icon: AgentIcon = AgentIcon.EMPEROR
 
-    def pay(self, player_id: int) -> None:
+    def pay(self, player: "Player", game: "Game") -> None:
         return
 
-    def reward(self, player_id: int) -> None:
+    def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
 

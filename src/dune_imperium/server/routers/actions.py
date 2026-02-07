@@ -22,13 +22,12 @@ def make_routes() -> APIRouter:
         drawn_cards = 0
         try:
             for _ in range(num_cards):
-                player.hand.add(player.source_deck.pop())
+                player.decks.hand.add(player.decks.source_deck.pop())
                 drawn_cards += 1
         except IndexError:
-            player.source_deck.rebuild(player.discard_pile.cards)
-            player.discard_pile.card_dict = {}
+            player.decks.rebuild_source_deck()
             for _ in range(num_cards - drawn_cards):
-                player.hand.add(player.source_deck.pop())
+                player.decks.hand.add(player.decks.source_deck.pop())
         await crud.update_game(game)
 
     @router.post("/acquire_card/{card_name}")
@@ -37,7 +36,7 @@ def make_routes() -> APIRouter:
     ) -> None:
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        player.discard_pile.add(game.pop_exposed_card(card_name))
+        player.decks.discard_pile.add(game.pop_exposed_card(card_name))
         game.exposed_imperium_deck.add(game.imperium_deck.pop())
         await crud.update_game(game)
 
@@ -53,8 +52,8 @@ def make_routes() -> APIRouter:
         # 5. get location reward
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        card: BaseBigCard = player.hand.pop(card_name)
-        player.in_play.add(card)
+        card: BaseBigCard = player.decks.hand.pop(card_name)
+        player.decks.in_play.add(card)
         card.agent_reward(player)
         await crud.update_game(game)
 
@@ -62,12 +61,12 @@ def make_routes() -> APIRouter:
     async def reveal_turn(crud: CrudDependency, request: Request):
         game = await crud.read_game(request.game_id)
         player = game.players[request.player_id]
-        while player.hand.cards:
-            card: BaseBigCard = player.hand.pop()
+        while player.decks.hand.cards:
+            card: BaseBigCard = player.decks.hand.pop()
             card.revelation_reward(player)
-            player.in_play.add(card)
-        while player.in_play.cards:
-            player.discard_pile.add(player.in_play.pop())
+            player.decks.in_play.add(card)
+        while player.decks.in_play.cards:
+            player.decks.discard_pile.add(player.decks.in_play.pop())
         await crud.update_game(game)
 
     @router.post("/trash_card/{card_name}/{source}")
@@ -78,11 +77,11 @@ def make_routes() -> APIRouter:
         player = game.players[request.player_id]
         # TODO reserve cards return to their decks when trashed
         if source == "hand":
-            card = player.hand.pop(card_name)
+            card = player.decks.hand.pop(card_name)
         elif source == "in_play":
-            card = player.in_play.pop(card_name)
+            card = player.decks.in_play.pop(card_name)
         elif source == "discard_pile":
-            card = player.discard_pile.pop(card_name)
+            card = player.decks.discard_pile.pop(card_name)
         else:
             raise ValueError(f"You cannot trash cards from {source}.")
         game.trashed_big_card_deck.add([card])

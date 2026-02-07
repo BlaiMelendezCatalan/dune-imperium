@@ -32,7 +32,7 @@ class InfluenceTracker(BaseModel):
                     player.resources.water += 1
                 case Faction.BENE_GESSERIT:
                     intrigue_card = game.intrigue_deck.pop()
-                    player.intrigues.add(intrigue_card)
+                    player.decks.intrigues.add(intrigue_card)
                 case Faction.SPACING_GUILD:
                     player.resources.solari += 3
                 case Faction.EMPEROR:

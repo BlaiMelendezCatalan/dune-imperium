@@ -1,16 +1,9 @@
-import random
-
 from pydantic import BaseModel
 
 from dune_imperium.decks.base import BaseBigCard
 from dune_imperium.decks.conflicts import ConflictCard, ConflictDeck
 from dune_imperium.decks.imperium import ExposedImperiumDeck, ImperiumDeck
 from dune_imperium.decks.intrigue import IntrigueDeck
-from dune_imperium.decks.leaders import (
-    CountessArianaThorvald,
-    GlossuRabban,
-    PaulAtreides,
-)
 from dune_imperium.decks.reserve import (
     ArrakisLiaisonDeck,
     FoldSpaceDeck,
@@ -33,19 +26,13 @@ class Game(BaseModel):
 
     name: str
 
-    players: dict[int, Player] = {  # TODO these are hardcoded values to make it work
-        0: Player(id=0, leader=PaulAtreides()),
-        1: Player(id=1, leader=GlossuRabban()),
-        2: Player(id=2, leader=CountessArianaThorvald()),
-    }
+    players: dict[int, Player] = {}
 
     round: int = 1
 
-    first_player: int = random.randint(0, len(players) - 1)
-
     current_player: int | None = None
 
-    map: Locations = Locations().initialize()
+    locations: Locations = Locations().initialize()
 
     imperium_deck: ImperiumDeck = ImperiumDeck().initialize()
     exposed_imperium_deck: ExposedImperiumDeck = ExposedImperiumDeck()
@@ -91,7 +78,10 @@ class Game(BaseModel):
     def combat(self) -> None: ...
 
     def makers(self) -> None:
-        [spice_location.produce_spice() for spice_location in self.map.spice_locations]
+        [
+            spice_location.produce_spice()
+            for spice_location in self.locations.spice_locations
+        ]
 
     def recall(self) -> None:
         if self.round == 10 or any(

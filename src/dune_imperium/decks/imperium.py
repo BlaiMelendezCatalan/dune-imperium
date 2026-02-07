@@ -267,8 +267,8 @@ class KwisatzHaderach(ImperiumCard):
     agent_icons: list[AgentIcon] = []
 
     def revelation_reward(self, player: "Player") -> None:
-        card = player.source_deck.pop()
-        player.hand.add(card)
+        card = player.decks.source_deck.pop()
+        player.decks.hand.add(card)
         # TODO requires more complex logic
 
 
@@ -297,7 +297,7 @@ class LietKynes(ImperiumCard):
     agent_icons: list[AgentIcon] = [AgentIcon.FREMEN, AgentIcon.CITY]
 
     def revelation_reward(self, player: "Player") -> None:
-        for card in player.in_play.cards:
+        for card in player.decks.in_play.cards:
             if Faction.FREMEN in card.factions:
                 player.persuasion += 2
 
