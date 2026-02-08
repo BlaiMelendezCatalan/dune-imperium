@@ -10,11 +10,15 @@ if TYPE_CHECKING:
     from dune_imperium.player import Player
 
 
+class NotEnoughResourcesError(Exception):
+    pass
+
+
 class Cost(BaseModel):
 
     water: int = 0
     solari: int = 0
-    spirce: int = 0
+    spice: int = 0
     fremen_influence: int = 0
 
 
@@ -27,8 +31,25 @@ class Location(BaseModel):
     free: bool = True
     control_player_id: int | None = None
 
+    def _check_enough_resources(self, player: "Player", game: "Game") -> bool:
+        if player.resources.water < self.cost.water:
+            return False
+        if player.resources.solari < self.cost.solari:
+            return False
+        if player.resources.spice < self.cost.spice:
+            return False
+        if game.fremen_influence.influence[player.id] < self.cost.fremen_influence:
+            return False
+        return True
+
     def pay(self, player: "Player", game: "Game") -> None:
-        raise NotImplementedError("This method should be overridden in subclasses")
+        if not self._check_enough_resources(player, game):
+            raise NotEnoughResourcesError(
+                "Not enough resources to deploy and agent to this location"
+            )
+        player.resources.water -= self.cost.water
+        player.resources.solari -= self.cost.solari
+        player.resources.spice -= self.cost.spice
 
     def reward(self, player: "Player", game: "Game") -> None:
         raise NotImplementedError("This method should be overridden in subclasses")
