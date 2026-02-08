@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Self
 from pydantic import BaseModel, model_validator
 
 from dune_imperium.elements.icons import AgentIcon
-from dune_imperium.map.control import ControlType, SolariControl, SpiceControl
 from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 if TYPE_CHECKING:
@@ -24,15 +23,18 @@ class Location(BaseModel):
     name: str
     agent_icon: AgentIcon
     combat: bool = False
-    control: ControlType = None
     cost: Cost = Cost()  # TODO: set cost for the locations that have one.
     free: bool = True
+    control_player_id: int | None = None
 
     def pay(self, player: "Player", game: "Game") -> None:
         raise NotImplementedError("This method should be overridden in subclasses")
 
     def reward(self, player: "Player", game: "Game") -> None:
         raise NotImplementedError("This method should be overridden in subclasses")
+
+    def control(self, game: "Game") -> None:
+        pass
 
 
 class SpiceLocation(Location):
@@ -49,7 +51,7 @@ class Arrakeen(Location):
     name: str = "arrakeen"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
-    control: ControlType = SolariControl()
+    control_player_id: int | None = None
 
     def pay(self, player: "Player", game: "Game") -> None:
         pass
@@ -59,20 +61,28 @@ class Arrakeen(Location):
         card = player.decks.source_deck.pop()
         player.decks.hand.add(card)
 
+    def control(self, game: "Game") -> None:
+        if self.control_player_id is not None:
+            game.players[self.control_player_id].resources.solari += 1
+
 
 class Carthag(Location):
 
     name: str = "carthag"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
-    control: ControlType = SolariControl()
+    control_player_id: int | None = None
 
     def pay(self, player: "Player", game: "Game") -> None:
-        return
+        pass
 
     def reward(self, player: "Player", game: "Game") -> None:
         # TODO
         ...
+
+    def control(self, game: "Game") -> None:
+        if self.control_player_id is not None:
+            game.players[self.control_player_id].resources.solari += 1
 
 
 class Conspire(Location):
@@ -112,8 +122,8 @@ class TheGreatFlat(SpiceLocation):
         return
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.resources.spice += 3 + self.extra_spice
+        self.extra_spice = 0
 
 
 class HaggaBasin(SpiceLocation):
@@ -127,7 +137,7 @@ class HaggaBasin(SpiceLocation):
         ...
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
+        player.resources.spice += 2 + self.extra_spice
         self.extra_spice = 0
 
 
@@ -193,14 +203,18 @@ class ImperialBasin(SpiceLocation):
     name: str = "imperial_basin"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
     combat: bool = True
-    control: ControlType = SpiceControl()
+    control_player_id: int | None = None
 
     def pay(self, player: "Player", game: "Game") -> None:
         return
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
+        player.resources.spice += 1 + self.extra_spice
         self.extra_spice = 0
+
+    def control(self, game: "Game") -> None:
+        if self.control_player_id is not None:
+            game.players[self.control_player_id].resources.spice += 1
 
 
 class Mentat(Location):
