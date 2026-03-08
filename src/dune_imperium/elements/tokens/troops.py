@@ -24,33 +24,24 @@ class Troop(BaseModel):
         self.state = TroopState.SUPPLY
 
 
-class TroopPool(BaseModel):  # TODO needs review. SHould this trigger frontend events?
+class TroopPool(BaseModel):
 
     troops: list[Troop] = [Troop() for _ in range(12)]
 
     def recruit(self, number: int) -> None:
-        if number > len(self.conflict):
-            raise ValueError("Not enough troops available to recruit.")
         for troop in self.supply[:number]:
             troop.to_garrison()
 
     def deploy(self, number: int, source: str) -> None:
         troops = self.supply if source == "supply" else self.garrison
-        if number > len(troops):
-            raise ValueError("Not enough troops available to deploy.")
         for troop in troops[:number]:
             troop.to_conflict()
 
-    def recall(self, number: int | None = None) -> None:
-        number = number or len(self.conflict)
-        if number > len(self.conflict):
-            raise ValueError("Not enough troops available to recall.")
-        for troop in self.conflict[:number]:
+    def reset(self, number: int | None = None) -> None:
+        for troop in self.conflict:
             troop.to_supply()
 
     def retreat(self, number: int) -> None:
-        if number > len(self.conflict):
-            raise ValueError("Not enough troops available to retreat.")
         for troop in self.conflict[:number]:
             troop.to_garrison()
 

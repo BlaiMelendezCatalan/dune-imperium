@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Self
 from pydantic import BaseModel, model_validator
 
 from dune_imperium.elements.icons import AgentIcon
+from dune_imperium.elements.tokens.agents import Agent
 from dune_imperium.utils.utils import all_subclasses, item_name_to_item_class_name
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ class Location(BaseModel):
     name: str
     agent_icon: AgentIcon
     combat: bool = False
-    cost: Cost = Cost()  # TODO: set cost for the locations that have one.
+    cost: Cost = Cost()
     free: bool = True
     control_player_id: int | None = None
 
@@ -74,13 +75,11 @@ class Arrakeen(Location):
     combat: bool = True
     control_player_id: int | None = None
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        pass
-
     def reward(self, player: "Player", game: "Game") -> None:
         player.troops.recruit(1)
         card = player.decks.source_deck.pop()
         player.decks.hand.add(card)
+        # TODO: ask player for deployment of troops
 
     def control(self, game: "Game") -> None:
         if self.control_player_id is not None:
@@ -94,12 +93,11 @@ class Carthag(Location):
     combat: bool = True
     control_player_id: int | None = None
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        pass
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(1)
+        intrigue_card = game.intrigue_deck.pop()
+        player.decks.intrigues.add(intrigue_card)
+        # TODO: ask player for deployment of troops
 
     def control(self, game: "Game") -> None:
         if self.control_player_id is not None:
@@ -110,14 +108,14 @@ class Conspire(Location):
 
     name: str = "conspire"
     agent_icon: AgentIcon = AgentIcon.EMPEROR
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(spice=4)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(2)
+        intrigue_card = game.intrigue_deck.pop()
+        player.decks.intrigues.add(intrigue_card)
+        player.resources.solari += 5
+        game.emperor_influence.increase_influence(player, game)
 
 
 class FoldSpace(Location):
@@ -125,12 +123,10 @@ class FoldSpace(Location):
     name: str = "fold_space"
     agent_icon: AgentIcon = AgentIcon.SPACING_GUILD
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        fold_space_card = game.fold_space_deck.pop()
+        player.decks.discard_pile.add(fold_space_card)
+        game.spacing_guild_influence.increase_influence(player, game)
 
 
 class TheGreatFlat(SpiceLocation):
@@ -138,13 +134,12 @@ class TheGreatFlat(SpiceLocation):
     name: str = "the_great_flat"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
     combat: bool = True
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
+    cost: Cost = Cost(water=2)
 
     def reward(self, player: "Player", game: "Game") -> None:
         player.resources.spice += 3 + self.extra_spice
         self.extra_spice = 0
+        # TODO: ask player for deployment of troops
 
 
 class HaggaBasin(SpiceLocation):
@@ -152,14 +147,12 @@ class HaggaBasin(SpiceLocation):
     name: str = "hagga_basin"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
     combat: bool = True
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(water=1)
 
     def reward(self, player: "Player", game: "Game") -> None:
         player.resources.spice += 2 + self.extra_spice
         self.extra_spice = 0
+        # TODO: ask player for deployment of troops
 
 
 class HallOfOratory(Location):
@@ -167,12 +160,9 @@ class HallOfOratory(Location):
     name: str = "hall_of_oratory"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(1)
+        # TODO: check how to add 1 to player's persuasion value for the rest of the turn
 
 
 class HardyWarriors(Location):
@@ -180,14 +170,12 @@ class HardyWarriors(Location):
     name: str = "hardy_warriors"
     agent_icon: AgentIcon = AgentIcon.FREMEN
     combat: bool = True
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(water=1)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(2)
+        game.fremen_influence.increase_influence(player, game)
+        # TODO: ask player for deployment of troops
 
 
 class Heighliner(Location):
@@ -195,27 +183,23 @@ class Heighliner(Location):
     name: str = "heighliner"
     agent_icon: AgentIcon = AgentIcon.SPACING_GUILD
     combat: bool = True
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(spice=6)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(5)
+        player.resources.water += 2
+        game.spacing_guild_influence.increase_influence(player, game)
+        # TODO: ask player for deployment of troops
 
 
 class HighCouncil(Location):
 
     name: str = "high_council"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(solari=5)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
+        # TODO: manage council
         ...
 
 
@@ -226,12 +210,10 @@ class ImperialBasin(SpiceLocation):
     combat: bool = True
     control_player_id: int | None = None
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
         player.resources.spice += 1 + self.extra_spice
         self.extra_spice = 0
+        # TODO: ask player for deployment of troops
 
     def control(self, game: "Game") -> None:
         if self.control_player_id is not None:
@@ -242,28 +224,22 @@ class Mentat(Location):
 
     name: str = "mentat"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(solari=2)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        card = player.decks.source_deck.pop()
+        player.decks.hand.add(card)
+        # TODO: manage mentat
 
 
 class RallyTroops(Location):
 
     name: str = "rally_troops"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(solari=4)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(4)
 
 
 class ResearchStation(Location):
@@ -271,14 +247,13 @@ class ResearchStation(Location):
     name: str = "research_station"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(water=2)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        for _ in range(3):
+            card = player.decks.source_deck.pop()
+            player.decks.hand.add(card)
+        # TODO: ask player for deployment of troops
 
 
 class Secrets(Location):
@@ -286,12 +261,10 @@ class Secrets(Location):
     name: str = "secrets"
     agent_icon: AgentIcon = AgentIcon.BENE_GESSERIT
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        intrigue_card = game.intrigue_deck.pop()
+        player.decks.intrigues.add(intrigue_card)
+        # TODO: ask other players to give you an intrigue card at random if they have more than 3
 
 
 class SecureContract(Location):
@@ -299,25 +272,19 @@ class SecureContract(Location):
     name: str = "secure_contract"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.resources.solari += 3
 
 
 class SelectiveBreeding(Location):
 
     name: str = "selective_breeding"
     agent_icon: AgentIcon = AgentIcon.BENE_GESSERIT
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(spice=2)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
+        game.bene_gesserit_influence.increase_influence(player, game)
+        # TODO: if player trashes a card it can draw 2
         ...
 
 
@@ -326,12 +293,8 @@ class SellMelange(Location):
     name: str = "sell_melange"
     agent_icon: AgentIcon = AgentIcon.SPICE_TRADE
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
+        # TODO: ask player how many spice they want to sell and manage the exchange rate
         ...
 
 
@@ -340,14 +303,13 @@ class SietchTabr(Location):
     name: str = "sietch_tabr"
     agent_icon: AgentIcon = AgentIcon.CITY
     combat: bool = True
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(fremen_influence=2)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.troops.recruit(1)
+        player.resources.water += 1
+        game.fremen_influence.increase_influence(player, game)
+        # TODO: ask player for deployment of troops
 
 
 class Stillsuits(Location):
@@ -356,26 +318,20 @@ class Stillsuits(Location):
     agent_icon: AgentIcon = AgentIcon.FREMEN
     combat: bool = True
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.resources.water += 1
+        game.fremen_influence.increase_influence(player, game)
+        # TODO: ask player for deployment of troops
 
 
 class Swordmaster(Location):
 
     name: str = "swordmaster"
     agent_icon: AgentIcon = AgentIcon.LANDSRAAT
-
-    def pay(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+    cost: Cost = Cost(solari=8)
 
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.agents.append(Agent())
 
 
 class Wealth(Location):
@@ -383,12 +339,9 @@ class Wealth(Location):
     name: str = "wealth"
     agent_icon: AgentIcon = AgentIcon.EMPEROR
 
-    def pay(self, player: "Player", game: "Game") -> None:
-        return
-
     def reward(self, player: "Player", game: "Game") -> None:
-        # TODO
-        ...
+        player.resources.solari += 2
+        game.emperor_influence.increase_influence(player, game)
 
 
 class Locations(BaseModel):
