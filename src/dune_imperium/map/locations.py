@@ -45,7 +45,7 @@ class Location(BaseModel):
     def pay(self, player: "Player", game: "Game") -> None:
         if not self._check_enough_resources(player, game):
             raise NotEnoughResourcesError(
-                "Not enough resources to deploy and agent to this location"
+                "Not enough resources to deploy an agent to this location"
             )
         player.resources.water -= self.cost.water
         player.resources.solari -= self.cost.solari
